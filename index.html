@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة طريق الرياضة | بوابة إدارة البيانات</title>
+    <!-- مكتبة قراءة ملفات الإكسل SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #0a1118;
+            --bg-surface: #101922;
+            --bg-elevated: #18232f;
+            --border-subtle: #223242;
+            --border-focus: #354d63;
+
+            --text-primary: #e6ebed;
+            --text-secondary: #9cb0bf;
+            --text-tertiary: #6b7f8e;
+
+            --accent-beige: #baa58c;
+            --accent-beige-hover: #c9b7a0;
+            --danger-soft: #853b3b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 1. شاشة البداية بالشعار المعتمد */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background-color: var(--bg-base);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s;
+        }
+
+        .splash-logo-box {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: softScale 1.4s ease-out forwards;
+        }
+
+        .splash-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .splash-meta {
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0;
+            animation: softFadeIn 0.9s ease 0.4s forwards;
+        }
+
+        .splash-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        .splash-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        @keyframes softScale {
+            0% { transform: scale(0.90); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes softFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* 2. شريط النظام العلوي */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .brand-unit {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-unit img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .brand-text h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        /* 3. مساحة العمل */
+        .workspace {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 18px 22px;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-beige);
+        }
+
+        .panel-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        /* 4. قسم الأرشيف الفعلي */
+        .archive-deck {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .archive-empty {
+            grid-column: 1 / -1;
+            padding: 24px;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            background-color: var(--bg-elevated);
+            border: 1px dashed var(--border-subtle);
+            border-radius: 6px;
+        }
+
+        .archive-item {
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .archive-meta h4 {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .archive-meta span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* 5. الأزرار */
+        .btn {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 7px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: #223140;
+            border-color: var(--border-focus);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-beige);
+            color: #0d1317;
+            border: 1px solid var(--accent-beige);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-beige-hover);
+            border-color: var(--accent-beige-hover);
+        }
+
+        .btn-subtle {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-subtle:hover {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border-color: var(--border-subtle);
+        }
+
+        /* 6. جدول البيانات */
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        th {
+            background-color: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 12px;
+        }
+
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            background-color: var(--bg-surface);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td input, td select {
+            width: 100%;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        td input:focus, td select:focus {
+            border-color: var(--accent-beige);
+        }
+
+        .btn-icon-del {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .btn-icon-del:hover {
+            color: #d96b6b;
+            background-color: rgba(217, 107, 107, 0.1);
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- شاشة البداية بالشعار الفعلي -->
+<div id="splash-screen">
+    <div class="splash-logo-box">
+        <img src="logo.jpg" alt="SportWay Logo" onerror="this.src='logo.png'">
+    </div>
+    <div class="splash-meta">
+        <div class="splash-title">طريق الرياضة | SportWay</div>
+        <div class="splash-subtitle">منظومة الأتمتة وضبط طلبيات الأطقم الرياضية</div>
+    </div>
+</div>
+
+<!-- الشريط العلوي -->
+<header>
+    <div class="brand-unit">
+        <img src="logo.jpg" alt="Logo" onerror="this.src='logo.png'">
+        <div class="brand-text">
+            <h1>منصة طريق الرياضة</h1>
+            <p>إدارة قوائم الفرق والتجهيز الصناعي</p>
+        </div>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="proceedToEditor()">الانتقال لمحرر التصميم ➔</button>
+    </div>
+</header>
+
+<!-- مساحة العمل الرئيسية -->
+<main class="workspace">
+
+    <!-- 1. قسم الأعمال والطلبيات السابقة -->
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <h2 class="panel-title">الأرشيف وقوائم الطلبيات السابقة</h2>
+                <p class="panel-subtitle">الطلبيات والقوائم المعتمدة والمحفوظة في النظام</p>
+            </div>
+        </div>
+        <div class="archive-deck" id="archiveContainer">
+            <div class="archive-empty">لا توجد طلبيات سابقة محفوظة حتى الآن</div>
+        </div>
+    </section>
+
+    <!-- 2. جدول إدخال بيانات الفريق واللاعبين -->
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <h2 class="panel-title">كشف أسماء وأرقام الفريق</h2>
+                <p class="panel-subtitle">إدخال مباشر أو استيراد ملف إكسل لربط المقاسات بالطباعة</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn" onclick="appendPlayerRow()">+ إضافة لاعب</button>
+                <label class="btn" style="cursor: pointer;">
+                    استيراد Excel / CSV
+                    <input type="file" id="excelUpload" accept=".xlsx, .xls, .csv" style="display: none;" onchange="readSpreadsheet(event)">
+                </label>
+                <button class="btn btn-subtle" onclick="resetTable()">تفريغ</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table id="rosterTable">
+                <thead>
+                <tr>
+                    <th style="width: 48px; text-align: center;">#</th>
+                    <th>اسم اللاعب على التيشيرت</th>
+                    <th style="width: 140px; text-align: center;">رقم القميص</th>
+                    <th style="width: 150px; text-align: center;">مقاس التيشيرت</th>
+                    <th style="width: 150px; text-align: center;">مقاس الشورت</th>
+                    <th style="width: 60px; text-align: center;">إجراء</th>
+                </tr>
+                </thead>
+                <tbody id="rosterBody">
+                <tr>
+                    <td style="text-align: center; color: var(--text-tertiary);">1</td>
+                    <td><input type="text" class="input-name" placeholder="اسم اللاعب"></td>
+                    <td><input type="text" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
+                    <td>
+                        <select class="select-jsize">
+                            <option value="S">S</option>
+                            <option value="M" selected>M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="select-ssize">
+                            <option value="S">S</option>
+                            <option value="M" selected>M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </td>
+                    <td style="text-align: center;"><button class="btn-icon-del" onclick="removeRow(this)" title="حذف">✕</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <input type="text" id="orderTitle" placeholder="اسم الطلبية / الفريق (لحفظها بالأرشيف)" style="background-color: var(--bg-base); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 8px 12px; border-radius: 5px; font-size: 12px; width: 280px; outline: none;">
+            <button class="btn btn-primary" style="padding: 10px 22px;" onclick="proceedToEditor()">
+                تأكيد البيانات والانتقال للمحرر ➔
+            </button>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // إخفاء شاشة البداية
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 700);
+        }, 1800);
+        renderArchive();
+    });
+
+    // دوال الجدول
+    function appendPlayerRow(name = '', num = '', jSize = 'M', sSize = 'M') {
+        const tbody = document.getElementById('rosterBody');
+        const rowCount = tbody.rows.length + 1;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+                <td style="text-align: center; color: var(--text-tertiary);">${rowCount}</td>
+                <td><input type="text" value="${name}" class="input-name" placeholder="اسم اللاعب"></td>
+                <td><input type="text" value="${num}" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
+                <td>
+                    <select class="select-jsize">
+                        <option value="S" ${jSize === 'S' ? 'selected' : ''}>S</option>
+                        <option value="M" ${jSize === 'M' ? 'selected' : ''}>M</option>
+                        <option value="L" ${jSize === 'L' ? 'selected' : ''}>L</option>
+                        <option value="XL" ${jSize === 'XL' ? 'selected' : ''}>XL</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="select-ssize">
+                        <option value="S" ${sSize === 'S' ? 'selected' : ''}>S</option>
+                        <option value="M" ${sSize === 'M' ? 'selected' : ''}>M</option>
+                        <option value="L" ${sSize === 'L' ? 'selected' : ''}>L</option>
+                        <option value="XL" ${sSize === 'XL' ? 'selected' : ''}>XL</option>
+                    </select>
+                </td>
+                <td style="text-align: center;"><button class="btn-icon-del" onclick="removeRow(this)" title="حذف">✕</button></td>
+            `;
+        tbody.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+        const tbody = document.getElementById('rosterBody');
+        if (tbody.rows.length > 1) {
+            btn.closest('tr').remove();
+            Array.from(tbody.rows).forEach((row, i) => row.cells[0].innerText = i + 1);
+        }
+    }
+
+    function resetTable() {
+        const tbody = document.getElementById('rosterBody');
+        tbody.innerHTML = '';
+        appendPlayerRow();
+    }
+
+    // قراءة الإكسل المرفوع
+    function readSpreadsheet(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const data = new Uint8Array(evt.target.result);
+            const wb = XLSX.read(data, {type: 'array'});
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws, {header: 1});
+
+            if (rows.length > 1) {
+                const tbody = document.getElementById('rosterBody');
+                tbody.innerHTML = '';
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (r && (r[0] || r[1])) {
+                        const name = r[0] || '';
+                        const num = r[1] || '';
+                        const jSize = (r[2] || 'M').toString().toUpperCase().trim();
+                        const sSize = (r[3] || jSize).toString().toUpperCase().trim();
+                        appendPlayerRow(name, num, jSize, sSize);
+                    }
+                }
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // إدارة الأرشيف الحقيقي مع زر الحذف الفردي
+    function renderArchive() {
+        const container = document.getElementById('archiveContainer');
+        const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+
+        if (savedOrders.length === 0) {
+            container.innerHTML = '<div class="archive-empty">لا توجد طلبيات سابقة محفوظة حتى الآن</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        savedOrders.forEach((order, index) => {
+            const div = document.createElement('div');
+            div.className = 'archive-item';
+            div.innerHTML = `
+                    <div class="archive-meta">
+                        <h4>${order.title}</h4>
+                        <span>${order.roster.length} لاعبين | ${order.date}</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn btn-subtle" onclick="loadSavedOrder(${index})">استعادة</button>
+                        <button class="btn-icon-del" onclick="deleteArchiveOrder(${index})" title="حذف المشروع">✕</button>
+                    </div>
+                `;
+            container.appendChild(div);
+        });
+    }
+
+    function deleteArchiveOrder(index) {
+        if (confirm("هل تريد حذف هذا المشروع نهائياً من الأرشيف؟")) {
+            const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+            savedOrders.splice(index, 1);
+            localStorage.setItem('sportway_orders_archive', JSON.stringify(savedOrders));
+            renderArchive();
+        }
+    }
+
+    function loadSavedOrder(index) {
+        const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+        const order = savedOrders[index];
+        if (!order) return;
+
+        const tbody = document.getElementById('rosterBody');
+        tbody.innerHTML = '';
+        order.roster.forEach(p => {
+            appendPlayerRow(p.name, p.number, p.jerseySize, p.shortSize);
+        });
+        document.getElementById('orderTitle').value = order.title;
+    }
+
+    // حفظ البيانات الفعلية والتوجيه للمحرر
+    function proceedToEditor() {
+        const rows = document.querySelectorAll('#rosterBody tr');
+        const roster = [];
+        rows.forEach(r => {
+            const name = r.querySelector('.input-name').value.trim();
+            const num = r.querySelector('.input-num').value.trim();
+            if (name || num) {
+                roster.push({
+                    name: name,
+                    number: num,
+                    jerseySize: r.querySelector('.select-jsize').value,
+                    shortSize: r.querySelector('.select-ssize').value
+                });
+            }
+        });
+
+        if (roster.length === 0) {
+            alert("يرجى إدخال اسم أو رقم لاعب واحد على الأقل للمتابعة.");
+            return;
+        }
+
+        const titleInput = document.getElementById('orderTitle').value.trim();
+        if (titleInput) {
+            const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+            savedOrders.unshift({
+                title: titleInput,
+                roster: roster,
+                date: new Date().toLocaleDateString('ar-SA')
+            });
+            localStorage.setItem('sportway_orders_archive', JSON.stringify(savedOrders.slice(0, 10)));
+        }
+
+        localStorage.setItem('sportway_roster', JSON.stringify(roster));
+        window.location.href = "editor.html";
+    }
+    // إخفاء شاشة البداية فوراً ومنع الشاشة البيضاء
+    window.addEventListener('DOMContentLoaded', () => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 300);
+            }, 500);
+        }
+    });
+</script>
+</body>
+</html>

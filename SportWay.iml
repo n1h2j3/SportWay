@@ -2,7 +2,8 @@
 <module type="GENERAL_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://C:/Projects/SportWay/SportWay" />
+    <orderEntry type="jdk" jdkName="Python 3.14" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

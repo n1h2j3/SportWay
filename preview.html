@@ -297,8 +297,39 @@
         container.appendChild(card);
     });
 
-    function triggerBatchExport() {
-        alert('جاري إرسال الإحداثيات لمحرك بايثون لتوليد رول الطباعة الصناعي (156 سم)...');
+    async function triggerBatchExport() {
+        const btn = document.querySelector('.btn-success');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ جاري تجهيز وطباعة أطقم الفريق الكاملة...";
+        btn.disabled = true;
+
+        try {
+            // نأخذ التصميم الأخضر المحفوظ بالكامل
+            const designBg = localStorage.getItem('sportway_current_design_bg') || '';
+
+            const response = await fetch('http://127.0.0.1:5000/api/generate-m-sample', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    roster: roster,
+                    layout: layout,
+                    designBg: designBg  // إرسال صورة التيشيرت الملونة للسيرفر
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                window.location.href = 'http://127.0.0.1:5000/api/download-test-file';
+            } else {
+                alert('حدث خطأ أثناء التجهيز: ' + result.message);
+            }
+        } catch (err) {
+            alert('تأكد من تشغيل print_server.py في الطرفية.');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 </script>
 </body>

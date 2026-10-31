@@ -9,32 +9,34 @@ class PatternCalibrator:
         """فتح ملف الباترون واستخراج أبعاد الصفحة الإجمالية"""
         self.doc = fitz.open(pdf_path)
         self.page = self.doc[0]
-        self.rect = self.page.rect  # حدود وأبعاد الصفحة (pt)
+        self.rect = self.page.rect  # حدود وأبعاد الصفحة الإجمالية
 
-    def get_back_jersey_anchor(self, safety_drop_cm=6.0, name_w_cm=28.0, name_h_cm=7.0, num_h_cm=22.0):
+    def get_back_jersey_anchor(self, safety_drop_cm=14.0, name_w_cm=26.0, name_h_cm=6.0, num_h_cm=20.0):
         """
-        حساب إحداثيات ومستطيل الاسم والرقم على ظهر التيشيرت:
-        - التوسيط الأفقي التلقائي (Center-X)
-        - مسافة الهبوط الآمنة من أسفل العراقة/الرقبة
+        حساب إحداثيات ومستطيل الاسم والرقم بناءً على أبعاد التيشيرت الحقيقية
+        - safety_drop_cm تم ضبطها على 14 سم لتبدأ الكتابة أسفل ياقة الرقبة مباشرة في منتصف الظهر
         """
-        center_x = self.rect.width / 2.0
+        # منتصف التيشيرت الفعلي أفقياً (39.8 سم / 2 = 19.9 سم)
+        jersey_actual_width_cm = 39.8
+        center_x = (jersey_actual_width_cm / 2.0) * CM_TO_PT
 
-        drop_pt = safety_drop_cm * CM_TO_PT
+        # نقطة البداية عمودياً (هبوط 14 سم من أعلى الكتف لتستقر تحت الرقبة)
+        top_y = safety_drop_cm * CM_TO_PT
+
         name_w_pt = name_w_cm * CM_TO_PT
         name_h_pt = name_h_cm * CM_TO_PT
         num_h_pt = num_h_cm * CM_TO_PT
 
-        # مستطيل الاسم
+        # 1. مستطيل الاسم (متوسط في منتصف الظهر)
         name_box = fitz.Rect(
             center_x - (name_w_pt / 2.0),
-            drop_pt,
+            top_y,
             center_x + (name_w_pt / 2.0),
-            drop_pt + name_h_pt
+            top_y + name_h_pt
         )
 
-        # مستطيل الرقم أسفل الاسم بفارق 3 سم
-        # مستطيل الرقم أسفل الاسم بفارق 3 سم
-        gap_pt = 3.0 * CM_TO_PT
+        # 2. مستطيل الرقم أسفل الاسم بفارق 2.5 سم
+        gap_pt = 2.5 * CM_TO_PT
         num_top = name_box.y1 + gap_pt
         num_box = fitz.Rect(
             center_x - (name_w_pt / 2.0),
@@ -67,33 +69,4 @@ class PatternCalibrator:
         }
 
 if __name__ == "__main__":
-    # مسار باترون التيشيرت مقاس M الفعلي
-    template_file = "templates/M.pdf"
-
-    try:
-        calibrator = PatternCalibrator(template_file)
-
-        # تحويل أبعاد الصفحة من نقاط (pt) إلى سنتيمتر (cm)
-        width_cm = calibrator.rect.width / CM_TO_PT
-        height_cm = calibrator.rect.height / CM_TO_PT
-
-        print("========================================")
-        print(f" تم فتح ملف الباترون بنجاح: {template_file}")
-        print(f"- العرض الإجمالي: {width_cm:.2f} سم")
-        print(f"- الارتفاع الإجمالي: {height_cm:.2f} سم")
-        print("========================================")
-
-        # استخراج مستطيلات ومواقع الطباعة لظهر التيشيرت
-        anchors = calibrator.get_back_jersey_anchor(safety_drop_cm=6.0)
-        name_rect = anchors["name_box"]
-        num_rect = anchors["number_box"]
-
-        print("\n--- إحداثيات الطباعة الفيزيائية (بالسنتيمتر) ---")
-        print(f"مستطيل الاسم: عرض {name_rect.width / CM_TO_PT:.1f} سم × ارتفاع {name_rect.height / CM_TO_PT:.1f} سم")
-        print(f"مكان الاسم (أفقي: {name_rect.x0 / CM_TO_PT:.1f} سم، عمودي: {name_rect.y0 / CM_TO_PT:.1f} سم)")
-        print(f"مستطيل الرقم: عرض {num_rect.width / CM_TO_PT:.1f} سم × ارتفاع {num_rect.height / CM_TO_PT:.1f} سم")
-        print(f"مكان الرقم (أفقي: {num_rect.x0 / CM_TO_PT:.1f} سم، عمودي: {num_rect.y0 / CM_TO_PT:.1f} سم)")
-        print("========================================")
-
-    except Exception as error:
-        print(f"خطأ أثناء قراءة الملف: {error}")
+    print("Pattern calibrator initialized successfully.")
