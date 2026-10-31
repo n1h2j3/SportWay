@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة طريق الرياضة | محرر الباترون والتصميم</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Cairo:wght@700;900&family=Chakra+Petch:wght@700&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #0a1118;
+            --bg-surface: #101922;
+            --bg-elevated: #18232f;
+            --border-subtle: #223242;
+            --text-primary: #e6ebed;
+            --text-secondary: #9cb0bf;
+            --accent-beige: #baa58c;
+            --accent-beige-hover: #c9b7a0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .brand-unit { display: flex; align-items: center; gap: 12px; }
+        .brand-unit img { width: 32px; height: 32px; object-fit: contain; }
+        .brand-text h1 { font-size: 14px; font-weight: 600; }
+
+        .btn {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+        .btn:hover { background-color: #223140; }
+        .btn-primary { background-color: var(--accent-beige); color: #0a1118; font-weight: 600; border: none; }
+        .btn-primary:hover { background-color: var(--accent-beige-hover); }
+
+        .editor-workspace { flex: 1; display: flex; overflow: hidden; }
+
+        .sidebar {
+            width: 320px;
+            background-color: var(--bg-surface);
+            border-left: 1px solid var(--border-subtle);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-beige);
+        }
+
+        .control-row { display: flex; flex-direction: column; gap: 6px; }
+        .control-row label { font-size: 11px; color: var(--text-secondary); }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .color-picker-box { display: flex; align-items: center; gap: 8px; }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 38px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .canvas-area {
+            flex: 1;
+            background-color: #070c12;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            background-color: #ffffff;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .canvas-hint {
+            position: absolute;
+            bottom: 12px;
+            background: rgba(16, 25, 34, 0.85);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand-unit">
+        <img src="logo.jpg" alt="Logo" onerror="this.src='logo.png'">
+        <div class="brand-text">
+            <h1>محرر ومطابقة التصميم على الباترون</h1>
+        </div>
+    </div>
+    <div>
+        <a href="index.html" class="btn">➔ القائمة والبيانات</a>
+        <button class="btn btn-primary" onclick="proceedToPreview()">تأكيد واعتماد التصميم ➔</button>
+    </div>
+</header>
+
+<div class="editor-workspace">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-section">
+            <span class="section-title">1. باترون التيشيرت الأساسي</span>
+            <label class="btn" style="cursor: pointer; justify-content: center; background-color: #233547; border-color: #3b536b;">
+                📄 رفع ملف الباترون (PDF)
+                <input type="file" id="jerseyUpload" accept="application/pdf" style="display: none;" onchange="loadPdfJersey(event)">
+            </label>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="section-title">2. العناصر والإضافات</span>
+            <button class="btn" onclick="addNewTextBox('نص إضافي')">+ إضافة مربع نص</button>
+            <label class="btn" style="cursor: pointer; justify-content: center;">
+                🖼️ رفع شعار النادي / الرعاة
+                <input type="file" id="logoUpload" accept="image/*" style="display: none;" onchange="uploadLogo(event)">
+            </label>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="section-title">3. تخصيص الخطوط والمظهر</span>
+
+            <div class="control-row">
+                <label>نوع الخط:</label>
+                <select id="fontSelect" onchange="applyFont(this.value)">
+                    <optgroup label="خطوط رياضية لاتينية">
+                        <option value="Teko" selected>Teko (طويل ومضغوط)</option>
+                        <option value="Bebas Neue">Bebas Neue (كلاسيكي رياضي)</option>
+                        <option value="Impact">Impact (عريض تقليدي)</option>
+                        <option value="Barlow Condensed">Barlow Condensed (حديث للأرقام)</option>
+                        <option value="Anton">Anton (أرقام بارزة)</option>
+                        <option value="Russo One">Russo One (رياضي قوي)</option>
+                        <option value="Chakra Petch">Chakra Petch (أرقام تقنية)</option>
+                        <option value="Montserrat">Montserrat (عصري متوازن)</option>
+                    </optgroup>
+                    <optgroup label="خطوط عربية مناسبة للأطقم">
+                        <option value="Cairo">Cairo (كايرو رسمي وواضح)</option>
+                        <option value="Almarai">Almarai (المراعي ثقيل)</option>
+                        <option value="Changa">Changa (شانغا هندسي)</option>
+                        <option value="Tajawal">Tajawal (تجوّل أنيق)</option>
+                        <option value="Readex Pro">Readex Pro (حديث وانسيابي)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="control-row">
+                <label>لون النص الداخلي (Fill):</label>
+                <div class="color-picker-box">
+                    <input type="color" id="fillColor" value="#ffffff" oninput="applyFill(this.value)">
+                    <input type="text" id="fillHex" value="#ffffff" maxlength="7" onchange="applyFill(this.value)">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <label>الإطار الخارجي (Stroke):</label>
+                <div class="color-picker-box">
+                    <input type="color" id="strokeColor" value="#000000" oninput="applyStroke(this.value)">
+                    <input type="text" id="strokeHex" value="#000000" maxlength="7" onchange="applyStroke(this.value)">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <label>سُمك الإطار:</label>
+                <input type="number" id="strokeWidth" value="2" min="0" max="25" oninput="applyStrokeWidth(this.value)">
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="section-title">أدوات العرض والكانفاس</span>
+            <button class="btn" onclick="resetZoom()">🔍 إعادة ضبط مقاس العرض (100%)</button>
+        </div>
+
+    </aside>
+
+    <main class="canvas-area">
+        <div class="canvas-wrapper">
+            <!-- كبرنا أبعاد العرض لتناسب باترون الرول العريض -->
+            <canvas id="tshirtCanvas" width="900" height="650"></canvas>
+        </div>
+        <div class="canvas-hint">
+            💡 استخدم عجلة الماوس للتقريب (Zoom)، واسحب العناصر وضعها بدقة فوق ظهر التيشيرت المطلوب
+        </div>
+    </main>
+
+</div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const canvas = new fabric.Canvas('tshirtCanvas');
+    const themeAccent = '#baa58c';
+
+    const savedRoster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+    const sampleName = savedRoster.length > 0 && savedRoster[0].name ? savedRoster[0].name : "الوليد";
+    const sampleNum = savedRoster.length > 0 && savedRoster[0].number ? savedRoster[0].number : "18";
+
+    // أحجام متناسقة مع الباترون
+    const nameBox = new fabric.Textbox(sampleName, {
+        left: 100,
+        top: 180,
+        width: 140,
+        fontSize: 26,
+        fontFamily: 'Cairo',
+        fontWeight: 'bold',
+        fill: '#ffffff',
+        stroke: '#000000',
+        strokeWidth: 2,
+        textAlign: 'center',
+        borderColor: themeAccent,
+        cornerColor: themeAccent,
+        cornerSize: 7,
+        transparentCorners: false
+    });
+    canvas.add(nameBox);
+
+    const numberBox = new fabric.Textbox(sampleNum, {
+        left: 100,
+        top: 230,
+        width: 140,
+        fontSize: 70,
+        fontFamily: 'Teko',
+        fontWeight: 'bold',
+        fill: '#ffffff',
+        stroke: '#000000',
+        strokeWidth: 2,
+        textAlign: 'center',
+        borderColor: themeAccent,
+        cornerColor: themeAccent,
+        cornerSize: 7,
+        transparentCorners: false
+    });
+    canvas.add(numberBox);
+
+    // رفع وتصيير الـ PDF مع الحفاظ على النسبة والتناسب
+    // دالة مساعدة لحفظ الصورة في IndexedDB بدون مشاكل مساحة الـ LocalStorage
+    function saveImageToDB(dataUrl) {
+        const request = indexedDB.open("SportWayDB", 1);
+        request.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains("assets")) {
+                db.createObjectStore("assets");
+            }
+        };
+        request.onsuccess = function(e) {
+            const db = e.target.result;
+            const tx = db.transaction("assets", "readwrite");
+            tx.objectStore("assets").put(dataUrl, "jersey_bg");
+        };
+    }
+
+    // رفع وتصيير الـ PDF وحفظه في IndexedDB
+    function loadPdfJersey(e) {
+        const file = e.target.files[0];
+        if (!file || file.type !== "application/pdf") return;
+
+        const fileReader = new FileReader();
+        fileReader.onload = function() {
+            const typedarray = new Uint8Array(this.result);
+            pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                pdf.getPage(1).then(function(page) {
+                    // مقياس مناسب للعرض والحفظ السريع
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const tempCanvas = document.createElement('canvas');
+                    const context = tempCanvas.getContext('2d');
+                    tempCanvas.height = viewport.height;
+                    tempCanvas.width = viewport.width;
+
+                    page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
+                        const bgDataUrl = tempCanvas.toDataURL('image/jpeg', 0.85);
+
+                        // حفظ الصورة في قاعدة بيانات المتصفح
+                        saveImageToDB(bgDataUrl);
+
+                        fabric.Image.fromURL(bgDataUrl, function(img) {
+                            const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+                            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                                scaleX: scale,
+                                scaleY: scale,
+                                left: (canvas.width - img.width * scale) / 2,
+                                top: (canvas.height - img.height * scale) / 2
+                            });
+                        });
+                    });
+                });
+            });
+        };
+        fileReader.readAsArrayBuffer(file);
+    }
+
+    // خاصية التقريب والتبعيد بالماوس لضبط الأماكن بدقة
+    canvas.on('mouse:wheel', function(opt) {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 4) zoom = 4;
+        if (zoom < 0.8) zoom = 0.8;
+        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+    });
+
+    function resetZoom() {
+        canvas.setZoom(1);
+        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    }
+
+    // الحذف بزر Delete أو Backspace
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            const active = canvas.getActiveObject();
+            if (active && !active.isEditing) {
+                canvas.remove(active);
+                canvas.discardActiveObject();
+                canvas.renderAll();
+            }
+        }
+    });
+
+    canvas.on('selection:created', syncControls);
+    canvas.on('selection:updated', syncControls);
+
+    function syncControls() {
+        const active = canvas.getActiveObject();
+        if (active && active.isType('textbox')) {
+            if (active.fontFamily) document.getElementById('fontSelect').value = active.fontFamily;
+            if (active.fill) {
+                document.getElementById('fillColor').value = active.fill;
+                document.getElementById('fillHex').value = active.fill;
+            }
+            if (active.stroke) {
+                document.getElementById('strokeColor').value = active.stroke;
+                document.getElementById('strokeHex').value = active.stroke;
+            }
+            document.getElementById('strokeWidth').value = active.strokeWidth || 0;
+        }
+    }
+
+    function applyFont(val) {
+        const active = canvas.getActiveObject();
+        if (active && active.isType('textbox')) {
+            active.set('fontFamily', val);
+            canvas.renderAll();
+        }
+    }
+
+    function applyFill(val) {
+        document.getElementById('fillColor').value = val;
+        document.getElementById('fillHex').value = val;
+        const active = canvas.getActiveObject();
+        if (active && active.isType('textbox')) {
+            active.set('fill', val);
+            canvas.renderAll();
+        }
+    }
+
+    function applyStroke(val) {
+        document.getElementById('strokeColor').value = val;
+        document.getElementById('strokeHex').value = val;
+        const active = canvas.getActiveObject();
+        if (active && active.isType('textbox')) {
+            active.set('stroke', val);
+            canvas.renderAll();
+        }
+    }
+
+    function applyStrokeWidth(val) {
+        const w = parseInt(val, 10) || 0;
+        const active = canvas.getActiveObject();
+        if (active && active.isType('textbox')) {
+            active.set('strokeWidth', w);
+            canvas.renderAll();
+        }
+    }
+
+    function addNewTextBox(text) {
+        const box = new fabric.Textbox(text, {
+            left: 100, top: 350, width: 140, fontSize: 20,
+            fontFamily: document.getElementById('fontSelect').value,
+            fill: document.getElementById('fillColor').value,
+            stroke: document.getElementById('strokeColor').value,
+            strokeWidth: parseInt(document.getElementById('strokeWidth').value, 10) || 0,
+            textAlign: 'center', borderColor: themeAccent, cornerColor: themeAccent, cornerSize: 7, transparentCorners: false
+        });
+        canvas.add(box);
+        canvas.setActiveObject(box);
+    }
+
+    function uploadLogo(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            fabric.Image.fromURL(evt.target.result, function(img) {
+                img.scaleToWidth(70);
+                img.set({ left: 100, top: 120, borderColor: themeAccent, cornerColor: themeAccent, cornerSize: 7, transparentCorners: false });
+                canvas.add(img);
+                canvas.setActiveObject(img);
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function proceedToPreview() {
+        const textObjects = canvas.getObjects('textbox');
+
+        // استخراج الاسم والرقم بدقة النسبة المئوية لمركز العنصر
+        const layout = textObjects.map(obj => {
+            const centerPoint = obj.getCenterPoint();
+            return {
+                type: 'text',
+                text: obj.text || '',
+                fontFamily: obj.fontFamily || 'Cairo',
+                // النسبة المئوية لمركز النص أفقياً وعمودياً بالنسبة لأبعاد الكانفاس
+                centerXPercent: (centerPoint.x / canvas.width) * 100,
+                centerYPercent: (centerPoint.y / canvas.height) * 100,
+                // حجم الخط النسبي
+                relativeFontSize: (obj.fontSize * (obj.scaleY || 1)) / canvas.height,
+                fill: obj.fill || '#000000',
+                stroke: obj.stroke || '#000000',
+                strokeWidth: obj.strokeWidth || 0
+            };
+        });
+
+        // أخذ لقطة نقية لخلفية التصميم الحالية بدون نصوص
+        textObjects.forEach(obj => obj.visible = false);
+        canvas.renderAll();
+        const currentDesignBg = canvas.toDataURL({ format: 'png', quality: 0.85 });
+
+        // إعادة إظهار النصوص في المحرر
+        textObjects.forEach(obj => obj.visible = true);
+        canvas.renderAll();
+
+        // الحفظ في ذاكرة المتصفح
+        localStorage.setItem('sportway_current_design_bg', currentDesignBg);
+        localStorage.setItem('sportway_design_layout', JSON.stringify(layout));
+
+        window.location.href = 'preview.html';
+    }
+
+</script>
+</body>
+</html>

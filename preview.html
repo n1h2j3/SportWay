@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة طريق الرياضة | تدقيق ومراجعة تصاميم الفريق</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Cairo:wght@700;900&family=Chakra+Petch:wght@700&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #0a1118;
+            --bg-surface: #101922;
+            --bg-elevated: #18232f;
+            --border-subtle: #223242;
+            --text-primary: #e6ebed;
+            --text-secondary: #9cb0bf;
+            --accent-beige: #baa58c;
+            --accent-green: #2e7d32;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-unit { display: flex; align-items: center; gap: 12px; }
+        .brand-unit img { width: 34px; height: 34px; object-fit: contain; }
+        .brand-text h1 { font-size: 16px; font-weight: 700; }
+        .brand-text p { font-size: 11px; color: var(--text-secondary); }
+
+        .header-actions { display: flex; gap: 10px; }
+
+        .btn {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 9px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn:hover { background-color: #243547; }
+        .btn-success { background-color: var(--accent-green); border: none; }
+        .btn-success:hover { background-color: #388e3c; }
+
+        main {
+            flex: 1;
+            padding: 24px;
+            max-width: 1450px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .summary-bar {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card-preview-area {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background-color: #0b131c;
+            overflow: hidden;
+        }
+
+        .card-bg-img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+            display: block;
+            pointer-events: none;
+        }
+
+        .text-element-centered {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .card-details {
+            padding: 12px 16px;
+            background-color: var(--bg-elevated);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-info-title { font-size: 14px; font-weight: 700; }
+        .player-info-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+        .badge-size {
+            background-color: var(--accent-beige);
+            color: #0a1118;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .card-placeholder-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand-unit">
+        <img src="logo.png" alt="Logo" onerror="this.src='logo.jpg'">
+        <div class="brand-text">
+            <h1>مراجعة وتدقيق تصاميم الفريق بالكامل</h1>
+            <p>معاينة شكل التيشيرت النهائي لكل لاعب مسجل في الجدول</p>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="editor.html" class="btn">✏️ العودة للمحرر</a>
+        <button class="btn btn-success" onclick="triggerBatchExport()">🖨️ أمر الطباعة النهائي (PDF 156cm)</button>
+    </div>
+</header>
+
+<main>
+    <div class="summary-bar">
+        <div>
+            <span>إجمالي قطع الفريق المسجلة: </span>
+            <strong id="totalCount" style="color: var(--accent-beige);">0</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary);">
+            تأكد من صحة الحروف الإملائية وأرقام التيشيرتات قبل إصدار أمر الماكينة
+        </div>
+    </div>
+
+    <div id="cardsContainer" class="roster-grid"></div>
+</main>
+
+<script>
+    const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+    const layout = JSON.parse(localStorage.getItem('sportway_design_layout') || '[]');
+    const currentDesignBg = localStorage.getItem('sportway_current_design_bg') || '';
+    const container = document.getElementById('cardsContainer');
+
+    document.getElementById('totalCount').innerText = roster.length;
+
+    if (roster.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">
+                لم يتم العثور على أي لاعبين مسجلين! يرجى العودة لصفحة الجدول وإدخال قائمة الفريق أولاً.
+            </div>
+        `;
+    }
+
+    // استخراج إعدادات الاسم والرقم المعتمدة من الكانفاس
+    const nameCfg = layout.find(item => item.type === 'text' && isNaN(item.text)) || {};
+    const numCfg = layout.find(item => item.type === 'text' && !isNaN(item.text)) || {};
+
+    const nameCenterX = (nameCfg.centerXPercent !== undefined) ? nameCfg.centerXPercent : 15.5;
+    const nameCenterY = (nameCfg.centerYPercent !== undefined) ? nameCfg.centerYPercent : 46.5;
+
+    const numCenterX = (numCfg.centerXPercent !== undefined) ? numCfg.centerXPercent : 15.5;
+    const numCenterY = (numCfg.centerYPercent !== undefined) ? numCfg.centerYPercent : 66.5;
+
+    // الحساب التناسبي لأحجام الخطوط
+    const nameFontSize = nameCfg.relativeFontSize ? Math.round(nameCfg.relativeFontSize * 240) : 20;
+    const numFontSize = numCfg.relativeFontSize ? Math.round(numCfg.relativeFontSize * 240) : 58;
+
+    roster.forEach((player) => {
+        const jerseySize = (player.jerseySize || player.size || 'M').trim().toUpperCase();
+        const shortSize = player.shortSize || jerseySize;
+        const isMedium = (jerseySize === 'M');
+
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        if (isMedium) {
+            card.innerHTML = `
+                <div class="card-preview-area">
+                    ${currentDesignBg ? `<img class="card-bg-img" src="${currentDesignBg}" alt="تصميم التيشيرت">` : ''}
+
+                    <!-- اسم اللاعب -->
+                    <div class="text-element-centered" style="
+                        left: ${nameCenterX}%;
+                        top: ${nameCenterY}%;
+                        font-family: '${nameCfg.fontFamily || 'Cairo'}', sans-serif;
+                        font-size: ${nameFontSize}px;
+                        font-weight: 900;
+                        color: ${nameCfg.fill || '#000000'};
+                        -webkit-text-stroke: ${nameCfg.strokeWidth ? `${nameCfg.strokeWidth * 0.4}px ${nameCfg.stroke}` : 'none'};
+                    ">
+                        ${player.name}
+                    </div>
+
+                    <!-- رقم اللاعب -->
+                    <div class="text-element-centered" style="
+                        left: ${numCenterX}%;
+                        top: ${numCenterY}%;
+                        font-family: '${numCfg.fontFamily || 'Teko'}', sans-serif;
+                        font-size: ${numFontSize}px;
+                        font-weight: 900;
+                        color: ${numCfg.fill || '#ffffff'};
+                        -webkit-text-stroke: ${numCfg.strokeWidth ? `${numCfg.strokeWidth * 0.4}px ${numCfg.stroke}` : 'none'};
+                    ">
+                        ${player.number}
+                    </div>
+                </div>
+                <div class="card-details">
+                    <div>
+                        <div class="player-info-title">${player.name} (#${player.number})</div>
+                        <div class="player-info-sub">شورت: ${shortSize}</div>
+                    </div>
+                    <span class="badge-size">${jerseySize}</span>
+                </div>
+            `;
+        } else {
+            card.innerHTML = `
+                <div class="card-preview-area" style="background-color: #0d1620;">
+                    <div class="card-placeholder-box">
+                        <span style="font-size: 26px; margin-bottom: 8px; opacity: 0.7;">⏳</span>
+                        <div style="font-size: 14px; font-weight: bold; color: var(--text-primary); margin-bottom: 4px;">
+                            ${player.name} (#${player.number})
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-secondary);">
+                            قيد التجهيز للطباعة | مقاس (${jerseySize})
+                        </p>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <div>
+                        <div class="player-info-title">${player.name} (#${player.number})</div>
+                        <div class="player-info-sub">شورت: ${shortSize}</div>
+                    </div>
+                    <span class="badge-size">${jerseySize}</span>
+                </div>
+            `;
+        }
+
+        container.appendChild(card);
+    });
+
+    function triggerBatchExport() {
+        alert('جاري إرسال الإحداثيات لمحرك بايثون لتوليد رول الطباعة الصناعي (156 سم)...');
+    }
+</script>
+</body>
+</html>
