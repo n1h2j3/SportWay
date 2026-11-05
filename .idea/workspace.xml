@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6ca473f0-ef18-4730-9b8b-534edbfdabbe" name="Changes" comment="add logo image">
+      <change beforePath="C:/Projects/SportWay/SportWay/editor.html" beforeDir="false" afterPath="C:/Projects/SportWay/SportWay/editor.html" afterDir="false" />
+      <change beforePath="C:/Projects/SportWay/SportWay/index.html" beforeDir="false" afterPath="C:/Projects/SportWay/SportWay/index.html" afterDir="false" />
+      <change beforePath="C:/Projects/SportWay/SportWay/preview.html" beforeDir="false" afterPath="C:/Projects/SportWay/SportWay/preview.html" afterDir="false" />
+      <change beforePath="C:/Projects/SportWay/SportWay/print_server.py" beforeDir="false" afterPath="C:/Projects/SportWay/SportWay/print_server.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="C:/Projects/SportWay/SportWay" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;n1h2j3&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/n1h2j3/SportWay.git&quot;,
+    &quot;accountId&quot;: &quot;1d88925d-89fe-48af-aa5e-512d523b346f&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="3LO8kx6KWr1UCDWUCj7tixyAudL" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "vcs.Git",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6ca473f0-ef18-4730-9b8b-534edbfdabbe" name="Changes" comment="" />
+      <created>1755069321000</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755069321000</updated>
+      <workItem from="1755069321000" duration="264000" />
+      <workItem from="1793313904780" duration="1379000" />
+      <workItem from="1793315334002" duration="1175000" />
+      <workItem from="1793316541081" duration="3571000" />
+      <workItem from="1793320153291" duration="440000" />
+      <workItem from="1793320617075" duration="45037000" />
+    </task>
+    <task id="LOCAL؜-٠٠٠٠١" summary="Initial project setup and gitignore">
+      <option name="closed" value="true" />
+      <created>1793316613628</created>
+      <option name="number" value="٠٠٠٠١" />
+      <option name="presentableId" value="LOCAL؜-٠٠٠٠١" />
+      <option name="project" value="LOCAL؜" />
+      <updated>1793316613628</updated>
+    </task>
+    <task id="LOCAL؜-٠٠٠٠٢" summary="fix: hide splash screen">
+      <option name="closed" value="true" />
+      <created>1793489366263</created>
+      <option name="number" value="٠٠٠٠٢" />
+      <option name="presentableId" value="LOCAL؜-٠٠٠٠٢" />
+      <option name="project" value="LOCAL؜" />
+      <updated>1793489366263</updated>
+    </task>
+    <task id="LOCAL؜-٠٠٠٠٣" summary="add logo image">
+      <option name="closed" value="true" />
+      <created>1793489678291</created>
+      <option name="number" value="٠٠٠٠٣" />
+      <option name="presentableId" value="LOCAL؜-٠٠٠٠٣" />
+      <option name="project" value="LOCAL؜" />
+      <updated>1793489678291</updated>
+    </task>
+    <task id="LOCAL؜-٠٠٠٠٤" summary="add logo image">
+      <option name="closed" value="true" />
+      <created>1793490944954</created>
+      <option name="number" value="٠٠٠٠٤" />
+      <option name="presentableId" value="LOCAL؜-٠٠٠٠٤" />
+      <option name="project" value="LOCAL؜" />
+      <updated>1793490944954</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial project setup and gitignore" />
+    <MESSAGE value="fix: hide splash screen" />
+    <MESSAGE value="add logo image" />
+    <option name="LAST_COMMIT_MESSAGE" value="add logo image" />
+  </component>
+</project>

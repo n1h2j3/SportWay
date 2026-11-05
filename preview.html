@@ -2,12 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة طريق الرياضة | تدقيق ومراجعة تصاميم الفريق</title>
-
+    <title>مراجعة وتدقيق تصاميم الفريق بالكامل - SportWay</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Cairo:wght@700;900&family=Chakra+Petch:wght@700&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Cairo:wght@700;900&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -17,14 +15,14 @@
             --border-subtle: #223242;
             --text-primary: #e6ebed;
             --text-secondary: #9cb0bf;
-            --accent-beige: #baa58c;
+            --accent-gold: #baa58c;
             --accent-green: #2e7d32;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-base);
             color: var(--text-primary);
             min-height: 100vh;
@@ -45,9 +43,8 @@
         }
 
         .brand-unit { display: flex; align-items: center; gap: 12px; }
-        .brand-unit img { width: 34px; height: 34px; object-fit: contain; }
         .brand-text h1 { font-size: 16px; font-weight: 700; }
-        .brand-text p { font-size: 11px; color: var(--text-secondary); }
+        .brand-text p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
         .header-actions { display: flex; gap: 10px; }
 
@@ -55,7 +52,7 @@
             background-color: var(--bg-elevated);
             color: var(--text-primary);
             border: 1px solid var(--border-subtle);
-            padding: 9px 16px;
+            padding: 9px 18px;
             font-size: 12px;
             font-weight: 600;
             border-radius: 6px;
@@ -73,7 +70,7 @@
         main {
             flex: 1;
             padding: 24px;
-            max-width: 1450px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
         }
@@ -91,44 +88,30 @@
 
         .roster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
             gap: 20px;
         }
 
         .card {
             background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            border: 1px solid var(--border-subtle);
+            position: relative;
         }
 
         .card-preview-area {
             position: relative;
             width: 100%;
-            height: 240px;
-            background-color: #0b131c;
+            height: 320px;
+            background-color: #0d1620;
             overflow: hidden;
-        }
-
-        .card-bg-img {
-            width: 100%;
-            height: 100%;
-            object-fit: fill;
-            display: block;
-            pointer-events: none;
-        }
-
-        .text-element-centered {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-            line-height: 1;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .card-details {
@@ -141,10 +124,8 @@
         }
 
         .player-info-title { font-size: 14px; font-weight: 700; }
-        .player-info-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-
         .badge-size {
-            background-color: var(--accent-beige);
+            background-color: var(--accent-gold);
             color: #0a1118;
             font-size: 11px;
             font-weight: 800;
@@ -152,185 +133,297 @@
             border-radius: 4px;
         }
 
-        .card-placeholder-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+        .empty-state-box {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
+            padding: 60px 20px;
+            background-color: var(--bg-surface);
+            border: 1px dashed var(--border-subtle);
+            border-radius: 10px;
         }
+        .empty-state-box h3 { margin-bottom: 10px; font-size: 16px; color: var(--accent-gold); }
+        .empty-state-box p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+        /* ---- بطاقة اللاعب: المعاينة بنفس نسبة الباترون الحقيقية ---- */
+        .stage {
+            position: relative; width: 100%;
+            container-type: size;            /* لتكون أحجام الخطوط نسبة من ارتفاع الباترون (cqh) مثل ملف الطباعة تماماً */
+            background: #fff; overflow: hidden;
+        }
+        .stage > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .ov { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none; font-weight: bold; line-height: 1.2; }
+        .stage { cursor: pointer; }
+        .edit-hint { position: absolute; top: 8px; inset-inline-start: 8px; background: rgba(10,17,24,.85); color: var(--accent-gold); font-size: 11px; padding: 4px 10px; border-radius: 12px; opacity: 0; transition: .2s; pointer-events: none; z-index: 5; }
+        .stage:hover .edit-hint { opacity: 1; }
+        .card.modified { border-color: var(--accent-gold); }
+        .mod-dot { color: var(--accent-gold); font-size: 11px; margin-inline-start: 6px; }
+        .edit-panel { padding: 10px 14px 14px; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .edit-panel .full { grid-column: 1 / -1; }
+        .edit-panel label { font-size: 10px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
+        .edit-panel input { background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 6px 8px; border-radius: 4px; font-size: 12px; outline: none; font-family: inherit; min-width: 0; }
+        .edit-panel input:focus { border-color: var(--accent-gold); }
+        .edit-panel .reset { grid-column: 1 / -1; font-size: 11px; padding: 5px; justify-content: center; }
+        .banner { border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; line-height: 1.8; display: none; }
+        .banner.warn { background: #3a2f12; border: 1px solid #7a6320; color: #f3d98b; }
+        .banner.err { background: #3a1818; border: 1px solid #7a2a2a; color: #f1a5a5; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="brand-unit">
-        <img src="logo.png" alt="Logo" onerror="this.src='logo.jpg'">
         <div class="brand-text">
-            <h1>مراجعة وتدقيق تصاميم الفريق بالكامل</h1>
-            <p>معاينة شكل التيشيرت النهائي لكل لاعب مسجل في الجدول</p>
+            <h1>مراجعة وتدقيق التصاميم — مقاس M</h1>
+            <p>يمكنكم تعديل أي لاعب بشكل فردي من تحت بطاقته، دون التأثير على بقية الفريق</p>
         </div>
     </div>
     <div class="header-actions">
         <a href="editor.html" class="btn">✏️ العودة للمحرر</a>
-        <button class="btn btn-success" onclick="triggerBatchExport()">🖨️ أمر الطباعة النهائي (PDF 156cm)</button>
+        <button class="btn btn-success" id="exportBtn" onclick="triggerBatchExport()">🖨️ إصدار ملف الطباعة (PDF)</button>
     </div>
 </header>
 
 <main>
+    <div id="serverBanner" class="banner err"></div>
+    <div id="warnBanner" class="banner warn"></div>
+
     <div class="summary-bar">
         <div>
-            <span>إجمالي قطع الفريق المسجلة: </span>
-            <strong id="totalCount" style="color: var(--accent-beige);">0</strong>
+            <span>تيشيرتات مقاس M الجاهزة للطباعة: </span>
+            <strong id="totalCount" style="color: var(--accent-gold); font-size: 15px;">0</strong>
+            <span style="color:var(--text-secondary); font-size:12px;"> &nbsp;|&nbsp; إجمالي الفريق: <span id="allCount">0</span></span>
         </div>
-        <div style="font-size: 12px; color: var(--text-secondary);">
-            تأكد من صحة الحروف الإملائية وأرقام التيشيرتات قبل إصدار أمر الماكينة
-        </div>
+        <div style="font-size: 12px; color: var(--text-secondary);" id="patternNote"></div>
     </div>
 
     <div id="cardsContainer" class="roster-grid"></div>
 </main>
 
 <script>
-    const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
-    const layout = JSON.parse(localStorage.getItem('sportway_design_layout') || '[]');
-    const currentDesignBg = localStorage.getItem('sportway_current_design_bg') || '';
-    const container = document.getElementById('cardsContainer');
+    const API = 'http://127.0.0.1:5000';
+    const PRINT_SIZE = 'M';
 
-    document.getElementById('totalCount').innerText = roster.length;
+    let roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+    const masterConfig = JSON.parse(localStorage.getItem('sportway_master_template') || '{}');
+    const nameCfg = masterConfig.nameConfig;
+    const numCfg = masterConfig.numberConfig;
+    const staticElements = masterConfig.staticElements || [];
+    const pattern = masterConfig.pattern || { wPt: 3, hPt: 4 };
+    const cards = []; // مراجع العناصر لكل لاعب M
 
-    if (roster.length === 0) {
-        container.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">
-                لم يتم العثور على أي لاعبين مسجلين! يرجى العودة لصفحة الجدول وإدخال قائمة الفريق أولاً.
-            </div>
-        `;
+    const REGULAR_ONLY = ['Bebas Neue', 'Anton', 'Russo One'];
+    const weightOf = f => REGULAR_ONLY.includes(f) ? 'normal' : 'bold';
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const sizeOf = p => String(p.jerseySize || p.size || 'M').trim().toUpperCase();
+    const saveRoster = () => localStorage.setItem('sportway_roster', JSON.stringify(roster));
+
+    function showBanner(id, html) {
+        const b = document.getElementById(id);
+        b.innerHTML = html; b.style.display = html ? 'block' : 'none';
     }
 
-    // استخراج إعدادات الاسم والرقم المعتمدة من الكانفاس
-    const nameCfg = layout.find(item => item.type === 'text' && isNaN(item.text)) || {};
-    const numCfg = layout.find(item => item.type === 'text' && !isNaN(item.text)) || {};
+    // ---- القيم الفعلية للاعب (الأصلية + التعديل الفردي) ----
+    function effective(p) {
+        const e = p.edit || {};
+        return {
+            name: e.name ?? p.name, number: e.number ?? p.number,
+            nameScale: (e.nameScale ?? 100) / 100, numScale: (e.numScale ?? 100) / 100,
+            nameCfg: { ...nameCfg, ...(e.nameCfg || {}) },   // تعديل فردي (مكان/حجم/خط) إن وُجد
+            numCfg: { ...numCfg, ...(e.numCfg || {}) }
+        };
+    }
 
-    const nameCenterX = (nameCfg.centerXPercent !== undefined) ? nameCfg.centerXPercent : 15.5;
-    const nameCenterY = (nameCfg.centerYPercent !== undefined) ? nameCfg.centerYPercent : 46.5;
+    // ---- رسم/تحديث نص فوق الباترون (نفس منطق الاحتواء التلقائي في السيرفر) ----
+    function paintText(el, stage, cfg, text, userScale) {
+        el.textContent = text;
+        el.style.left = cfg.centerXPercent + '%';
+        el.style.top = cfg.centerYPercent + '%';
+        el.style.fontFamily = `'${cfg.fontFamily}', 'Cairo', sans-serif`;
+        el.style.fontWeight = weightOf(cfg.fontFamily);
+        el.style.color = cfg.fill;
+        el.style.webkitTextStroke = (cfg.strokeRel || 0) > 0 ? `calc(${cfg.strokeRel * userScale} * 100cqh) ${cfg.stroke}` : '0';
+        // 1) قياس بحجم الخط الأساسي
+        el.style.fontSize = `calc(${cfg.relativeFontSize} * 100cqh)`;
+        const boxPx = (cfg.widthPercent / 100) * stage.clientWidth;
+        const w = el.offsetWidth;
+        const fit = (w > boxPx && w > 0) ? boxPx / w : 1;
+        // 2) تطبيق الاحتواء ثم تعديل الموظف
+        el.style.fontSize = `calc(${cfg.relativeFontSize * fit * userScale} * 100cqh)`;
+        el.dataset.fit = fit;
+    }
 
-    const numCenterX = (numCfg.centerXPercent !== undefined) ? numCfg.centerXPercent : 15.5;
-    const numCenterY = (numCfg.centerYPercent !== undefined) ? numCfg.centerYPercent : 66.5;
+    function refreshCard(c) {
+        const v = effective(c.player);
+        paintText(c.nameEl, c.stage, v.nameCfg, v.name, v.nameScale);
+        paintText(c.numEl, c.stage, v.numCfg, v.number, v.numScale);
+        const modified = !!(c.player.edit && Object.keys(c.player.edit).length);
+        c.card.classList.toggle('modified', modified);
+        c.title.innerHTML = `${esc(v.name)} (#${esc(v.number)})` + (modified ? '<span class="mod-dot">● معدّل</span>' : '');
+        const fit = parseFloat(c.nameEl.dataset.fit);
+        c.fitNote.textContent = fit < 1 ? `⚠️ الاسم طويل: صُغّر تلقائياً إلى ${Math.round(fit * 100)}%` : '';
+    }
 
-    // الحساب التناسبي لأحجام الخطوط
-    const nameFontSize = nameCfg.relativeFontSize ? Math.round(nameCfg.relativeFontSize * 240) : 20;
-    const numFontSize = numCfg.relativeFontSize ? Math.round(numCfg.relativeFontSize * 240) : 58;
+    function onEdit(c) {
+        const f = c.fields, p = c.player, e = { ...(p.edit || {}) };
+        delete e.name; delete e.number;
+        if (f.name.value.trim() !== String(p.name ?? '')) e.name = f.name.value.trim();
+        if (f.number.value.trim() !== String(p.number ?? '')) e.number = f.number.value.trim();
+        if (Object.keys(e).length) p.edit = e; else delete p.edit;
+        saveRoster();
+        refreshCard(c);
+    }
 
-    roster.forEach((player) => {
-        const jerseySize = (player.jerseySize || player.size || 'M').trim().toUpperCase();
-        const shortSize = player.shortSize || jerseySize;
-        const isMedium = (jerseySize === 'M');
+    function resetCard(c) {
+        delete c.player.edit;
+        c.fields.name.value = c.player.name ?? ''; c.fields.number.value = c.player.number ?? '';
+        saveRoster();
+        refreshCard(c);
+    }
 
+    const openEditor = idx => { location.href = `editor.html?player=${idx}`; };
+
+    function buildCard(player, idx) {
         const card = document.createElement('div');
         card.className = 'card';
+        const sz = sizeOf(player);
 
-        if (isMedium) {
+        if (sz !== PRINT_SIZE) {
             card.innerHTML = `
-                <div class="card-preview-area">
-                    ${currentDesignBg ? `<img class="card-bg-img" src="${currentDesignBg}" alt="تصميم التيشيرت">` : ''}
-
-                    <!-- اسم اللاعب -->
-                    <div class="text-element-centered" style="
-                        left: ${nameCenterX}%;
-                        top: ${nameCenterY}%;
-                        font-family: '${nameCfg.fontFamily || 'Cairo'}', sans-serif;
-                        font-size: ${nameFontSize}px;
-                        font-weight: 900;
-                        color: ${nameCfg.fill || '#000000'};
-                        -webkit-text-stroke: ${nameCfg.strokeWidth ? `${nameCfg.strokeWidth * 0.4}px ${nameCfg.stroke}` : 'none'};
-                    ">
-                        ${player.name}
-                    </div>
-
-                    <!-- رقم اللاعب -->
-                    <div class="text-element-centered" style="
-                        left: ${numCenterX}%;
-                        top: ${numCenterY}%;
-                        font-family: '${numCfg.fontFamily || 'Teko'}', sans-serif;
-                        font-size: ${numFontSize}px;
-                        font-weight: 900;
-                        color: ${numCfg.fill || '#ffffff'};
-                        -webkit-text-stroke: ${numCfg.strokeWidth ? `${numCfg.strokeWidth * 0.4}px ${numCfg.stroke}` : 'none'};
-                    ">
-                        ${player.number}
-                    </div>
+                <div class="card-preview-area" style="height:200px; flex-direction:column; color:#778899;">
+                    <span style="font-size:30px;">⏳</span>
+                    <div style="margin-top:10px; font-weight:bold; color:#e6ebed;">${esc(player.name)} (#${esc(player.number)})</div>
+                    <div style="font-size:11px; margin-top:4px;">قيد التجهيز لاحقاً | مقاس (${esc(sz)})</div>
                 </div>
-                <div class="card-details">
-                    <div>
-                        <div class="player-info-title">${player.name} (#${player.number})</div>
-                        <div class="player-info-sub">شورت: ${shortSize}</div>
-                    </div>
-                    <span class="badge-size">${jerseySize}</span>
-                </div>
-            `;
-        } else {
-            card.innerHTML = `
-                <div class="card-preview-area" style="background-color: #0d1620;">
-                    <div class="card-placeholder-box">
-                        <span style="font-size: 26px; margin-bottom: 8px; opacity: 0.7;">⏳</span>
-                        <div style="font-size: 14px; font-weight: bold; color: var(--text-primary); margin-bottom: 4px;">
-                            ${player.name} (#${player.number})
-                        </div>
-                        <p style="font-size: 11px; color: var(--text-secondary);">
-                            قيد التجهيز للطباعة | مقاس (${jerseySize})
-                        </p>
-                    </div>
-                </div>
-                <div class="card-details">
-                    <div>
-                        <div class="player-info-title">${player.name} (#${player.number})</div>
-                        <div class="player-info-sub">شورت: ${shortSize}</div>
-                    </div>
-                    <span class="badge-size">${jerseySize}</span>
-                </div>
-            `;
+                <div class="card-details"><div class="player-info-title">${esc(player.name)} (#${esc(player.number)})</div>
+                <span class="badge-size" style="background:#334455; color:#fff;">${esc(sz)}</span></div>`;
+            return { card };
         }
 
-        container.appendChild(card);
-    });
+        const staticHtml = staticElements.map(el => {
+            if (el.type === 'image') {
+                return `<img src="${API}/api/asset/${esc(el.assetId)}" style="position:absolute; left:${el.centerXPercent}%; top:${el.centerYPercent}%; width:${el.widthPercent}%; transform:translate(-50%,-50%); pointer-events:none;">`;
+            }
+            return `<div class="ov" data-static="1" style="left:${el.centerXPercent}%; top:${el.centerYPercent}%; font-family:'${esc(el.fontFamily)}',sans-serif; font-size:calc(${el.relativeFontSize} * 100cqh); color:${esc(el.fill)}; -webkit-text-stroke:${(el.strokeRel || 0) > 0 ? `calc(${el.strokeRel} * 100cqh) ${esc(el.stroke)}` : '0'};">${esc(el.text)}</div>`;
+        }).join('');
 
+        card.innerHTML = `
+            <div class="stage" style="aspect-ratio:${pattern.wPt} / ${pattern.hPt};" title="اضغط لتعديل هذا التيشيرت">
+                <span class="edit-hint">✏️ اضغط لتعديل هذا التيشيرت</span>
+                <img class="bg" src="${API}/api/template-preview/${PRINT_SIZE}?w=900&t=${Date.now()}" onerror="window.__bgFail && window.__bgFail()">
+                ${staticHtml}
+                <div class="ov" data-role="name"></div>
+                <div class="ov" data-role="num"></div>
+            </div>
+            <div class="card-details">
+                <div class="player-info-title"></div>
+                <span class="badge-size">${PRINT_SIZE}</span>
+            </div>
+            <div class="edit-panel">
+                <label>الاسم على التيشيرت<input type="text" data-f="name" value="${esc(player.name)}"></label>
+                <label>الرقم<input type="text" data-f="number" value="${esc(player.number)}"></label>
+                <button class="btn full" data-edit style="justify-content:center; background:#1e2c3a; border-color:#31465c;">✏️ فتح هذا التيشيرت في المحرر (مكان / حجم / خط)</button>
+                <div data-fit style="grid-column:1/-1; font-size:11px; color:#f3d98b; min-height:14px;"></div>
+                <button class="btn reset" data-reset>↺ استرجاع بيانات الجدول الأصلية</button>
+            </div>`;
+
+        const c = {
+            card, player,
+            stage: card.querySelector('.stage'),
+            nameEl: card.querySelector('[data-role=name]'),
+            numEl: card.querySelector('[data-role=num]'),
+            title: card.querySelector('.player-info-title'),
+            fitNote: card.querySelector('[data-fit]'),
+            fields: {}
+        };
+        card.querySelectorAll('[data-f]').forEach(i => { c.fields[i.dataset.f] = i; i.addEventListener('input', () => onEdit(c)); });
+        card.querySelector('[data-reset]').addEventListener('click', () => resetCard(c));
+        card.querySelector('[data-edit]').addEventListener('click', () => openEditor(idx));
+        c.stage.addEventListener('click', () => openEditor(idx));
+        return c;
+    }
+
+    function renderCards() {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = '';
+        cards.length = 0;
+        const mCount = roster.filter(p => sizeOf(p) === PRINT_SIZE).length;
+        document.getElementById('totalCount').innerText = mCount;
+        document.getElementById('allCount').innerText = roster.length;
+
+        if (roster.length === 0 || !nameCfg || !numCfg) {
+            container.innerHTML = `
+                <div class="empty-state-box">
+                    <h3>⚠️ ${roster.length === 0 ? 'لا يوجد لاعبون مسجلون' : 'لم يتم اعتماد تصميم من المحرر'}</h3>
+                    <p>${roster.length === 0 ? 'ابدؤوا من صفحة الجدول وأدخلوا اللاعبين.' : 'ارجعوا للمحرر وحددوا مكان الاسم والرقم ثم اضغطوا «تأكيد واعتماد التصميم».'}</p>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        <a href="index.html" class="btn" style="background:#2e7d32; border:none;">📋 صفحة الجدول</a>
+                        <a href="editor.html" class="btn">✏️ المحرر</a>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        roster.forEach((p, idx) => {
+            const c = buildCard(p, idx);
+            container.appendChild(c.card);
+            if (c.stage) { cards.push(c); }
+        });
+        // بعد إضافة البطاقات للصفحة نقيس ونرسم (القياس يحتاج أن تكون ظاهرة)
+        (document.fonts ? document.fonts.ready : Promise.resolve()).then(refreshAll);
+    }
+
+    function refreshAll() { cards.forEach(refreshCard); }
+    window.addEventListener('resize', refreshAll);
+
+    window.__bgFail = function () {
+        showBanner('serverBanner', '⚠️ تعذّر تحميل صورة الباترون من السيرفر. شغّلوا <b>python print_server.py</b> وتأكدوا أن الباترون مرفوع في المحرر، ثم حدّثوا الصفحة.');
+        window.__bgFail = null;
+    };
+
+    // ---- إصدار ملف الطباعة ----
     async function triggerBatchExport() {
-        const btn = document.querySelector('.btn-success');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "⏳ جاري تجهيز وطباعة أطقم الفريق الكاملة...";
+        const mPlayers = roster.filter(p => sizeOf(p) === PRINT_SIZE);
+        if (mPlayers.length === 0) { alert('لا يوجد لاعبين بمقاس M لإصدار ملف الطباعة.'); return; }
+        const btn = document.getElementById('exportBtn');
+        const original = btn.innerHTML;
+        btn.innerHTML = '⏳ جاري توليد ملف الطباعة...';
         btn.disabled = true;
-
+        showBanner('warnBanner', '');
         try {
-            // نأخذ التصميم الأخضر المحفوظ بالكامل
-            const designBg = localStorage.getItem('sportway_current_design_bg') || '';
-
-            const response = await fetch('http://127.0.0.1:5000/api/generate-m-sample', {
+            const response = await fetch(`${API}/api/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    roster: roster,
-                    layout: layout,
-                    designBg: designBg  // إرسال صورة التيشيرت الملونة للسيرفر
+                    size: PRINT_SIZE, roster, masterConfig,
+                    orderTitle: localStorage.getItem('sportway_order_title') || 'SportWay'
                 })
             });
-
-            const result = await response.json();
-
-            if (result.success) {
-                window.location.href = 'http://127.0.0.1:5000/api/download-test-file';
-            } else {
-                alert('حدث خطأ أثناء التجهيز: ' + result.message);
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                alert('حدث خطأ أثناء التجهيز: ' + (err.message || response.status));
+                return;
             }
+            let warnings = [];
+            try { warnings = JSON.parse(decodeURIComponent(response.headers.get('X-Print-Warnings') || '[]')); } catch (e) {}
+            const blob = await response.blob();
+            const cd = response.headers.get('Content-Disposition') || '';
+            const m = cd.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+            const filename = m ? decodeURIComponent(m[1]) : `SportWay_${PRINT_SIZE}.pdf`;
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            if (warnings.length) showBanner('warnBanner', '<b>تنبيهات على ملف الطباعة:</b><br>• ' + warnings.map(esc).join('<br>• '));
         } catch (err) {
-            alert('تأكد من تشغيل print_server.py في الطرفية.');
+            alert('تأكدوا من تشغيل السيرفر: python print_server.py');
         } finally {
-            btn.innerHTML = originalText;
+            btn.innerHTML = original;
             btn.disabled = false;
         }
     }
+
+    document.getElementById('patternNote').innerText =
+        masterConfig.pattern ? `أبعاد الباترون: ${(pattern.wPt / 72 * 2.54).toFixed(1)} × ${(pattern.hPt / 72 * 2.54).toFixed(1)} سم` : '';
+    renderCards();
 </script>
+
 </body>
 </html>

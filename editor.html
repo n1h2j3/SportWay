@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة طريق الرياضة | محرر التصميم</title>
-
+    <title>محرر ومطابقة التصميم على الباترون - SportWay</title>
+    <!-- استدعاء المكتبات الضرورية للمحرر -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Chakra+Petch:wght@700&family=Cairo:wght@700;900&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Anton&family=Barlow+Condensed:wght@700;900&family=Bebas+Neue&family=Cairo:wght@700;900&family=Changa:wght@700;800&family=Montserrat:wght@800;900&family=Readex+Pro:wght@600;700&family=Russo+One&family=Tajawal:wght@700;900&family=Teko:wght@700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -21,14 +19,14 @@
             --border-subtle: #223242;
             --text-primary: #e6ebed;
             --text-secondary: #9cb0bf;
-            --accent-beige: #baa58c;
-            --accent-beige-hover: #c9b7a0;
+            --accent-gold: #baa58c;
+            --accent-green: #2e7d32;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-base);
             color: var(--text-primary);
             height: 100vh;
@@ -40,96 +38,93 @@
         header {
             background-color: var(--bg-surface);
             border-bottom: 1px solid var(--border-subtle);
-            padding: 10px 24px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
+            z-index: 10;
         }
 
-        .brand-unit { display: flex; align-items: center; gap: 12px; }
-        .brand-unit img { width: 32px; height: 32px; object-fit: contain; }
-        .brand-text h1 { font-size: 14px; font-weight: 600; }
+        .header-title { font-size: 15px; font-weight: 700; }
+        .header-actions { display: flex; gap: 10px; }
 
         .btn {
             background-color: var(--bg-elevated);
             color: var(--text-primary);
             border: 1px solid var(--border-subtle);
-            padding: 8px 14px;
+            padding: 8px 16px;
             font-size: 12px;
-            font-weight: 500;
-            border-radius: 5px;
+            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            transition: 0.2s ease;
+            transition: 0.2s;
         }
+        .btn:hover { background-color: #243547; }
+        .btn-success { background-color: var(--accent-green); border: none; }
+        .btn-success:hover { background-color: #388e3c; }
 
-        .btn:hover { background-color: #223140; }
-
-        .btn-primary {
-            background-color: var(--accent-beige);
-            color: #0a1118;
-            font-weight: 600;
-            border: none;
+        .editor-container {
+            flex: 1;
+            display: flex;
+            height: calc(100vh - 57px);
         }
-
-        .btn-primary:hover { background-color: var(--accent-beige-hover); }
-
-        .editor-workspace { flex: 1; display: flex; overflow: hidden; }
 
         .sidebar {
             width: 320px;
             background-color: var(--bg-surface);
             border-left: 1px solid var(--border-subtle);
-            padding: 16px;
+            padding: 20px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-            flex-shrink: 0;
+            gap: 20px;
         }
 
         .sidebar-section {
-            background-color: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
         .section-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
+            color: var(--accent-gold);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--accent-beige);
         }
 
-        .control-row { display: flex; flex-direction: column; gap: 6px; }
-        .control-row label { font-size: 11px; color: var(--text-secondary); }
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
 
-        select, input[type="text"], input[type="number"] {
-            width: 100%;
-            background-color: var(--bg-base);
+        .control-row select, .control-row input[type="text"], .control-row input[type="number"] {
+            background-color: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
             color: var(--text-primary);
             padding: 8px;
             border-radius: 4px;
             font-size: 12px;
+            outline: none;
         }
 
-        .color-picker-box { display: flex; align-items: center; gap: 8px; }
+        .color-picker-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-        input[type="color"] {
-            -webkit-appearance: none;
+        .color-picker-box input[type="color"] {
             border: none;
-            width: 38px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 4px;
             cursor: pointer;
             background: none;
@@ -137,102 +132,92 @@
 
         .canvas-area {
             flex: 1;
-            background-color: #070c12;
+            background-color: #0d1620;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            overflow: hidden;
+            justify-content: center;
             position: relative;
+            padding: 20px;
         }
 
         .canvas-wrapper {
             background-color: #ffffff;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-            border: 1px solid var(--border-subtle);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         .canvas-hint {
             position: absolute;
-            bottom: 12px;
-            background: rgba(16, 25, 34, 0.85);
-            padding: 6px 14px;
-            border-radius: 20px;
+            bottom: 15px;
             font-size: 11px;
             color: var(--text-secondary);
-            border: 1px solid var(--border-subtle);
-            pointer-events: none;
+            background: rgba(16, 25, 34, 0.8);
+            padding: 6px 14px;
+            border-radius: 20px;
         }
     </style>
 </head>
-
 <body>
 
 <header>
-    <div class="brand-unit">
-        <img src="logo.png" alt="Logo" onerror="this.src='logo.png'">
-        <div class="brand-text">
-            <h1>محرر ومطابقة التصميم على الباترون</h1>
-        </div>
+    <div class="header-actions">
+        <a href="index.html" class="btn" id="backBtn">➔ القائمة والبيانات</a>
+        <button class="btn" id="newDesignBtn" onclick="newDesign()">🆕 تصميم جديد</button>
+        <button class="btn" id="resetPlayerBtn" onclick="resetPlayerDesign()" style="display:none">↺ استرجاع التصميم العام</button>
+        <button class="btn btn-success" id="confirmBtn" onclick="onConfirm()">تأكيد واعتماد التصميم ➔</button>
     </div>
-
-    <div>
-        <a id="backButton" href="index.html" class="btn">➔ القائمة والبيانات</a>
-        <button class="btn btn-primary" id="saveButton" onclick="proceedToPreview()">
-            تأكيد واعتماد التصميم ➔
-        </button>
-    </div>
+    <div class="header-title"><span id="titleText">محرر ومطابقة التصميم على الباترون</span> <span id="sizeTag" style="color:var(--accent-gold)">— مقاس M</span></div>
 </header>
 
-<div class="editor-workspace">
-
+<div class="editor-container">
     <aside class="sidebar">
-
-        <div class="sidebar-section">
+        <div id="playerInfo" style="display:none; background:#1c2a1d; border:1px solid #2e7d32; border-radius:6px; padding:10px 12px; font-size:12px; line-height:1.9;"></div>
+        <div class="sidebar-section" id="secPattern">
             <span class="section-title">1. باترون التيشيرت الأساسي</span>
-
-            <label class="btn" style="cursor:pointer; justify-content:center; background-color:#233547; border-color:#3b536b;">
+            <label class="btn" style="cursor: pointer; justify-content: center; background-color: #1e2c3a; border-color: #31465c;">
                 📄 رفع ملف الباترون (PDF)
-                <input type="file" id="jerseyUpload" accept="application/pdf" style="display:none;" onchange="loadPdfJersey(event)">
+                <input type="file" id="pdfUploadInput" accept="application/pdf" style="display: none;" onchange="loadPdfJersey(event)">
             </label>
+            <div id="patternStatus" style="font-size:11px; color:var(--text-secondary);">لم يتم رفع باترون بعد</div>
         </div>
 
-        <div class="sidebar-section">
+        <div class="sidebar-section" id="secElements">
             <span class="section-title">2. العناصر والإضافات</span>
-
-            <button class="btn" onclick="addNewTextBox('نص إضافي')">
-                + إضافة مربع نص
-            </button>
-
-            <label class="btn" style="cursor:pointer; justify-content:center;">
-                🖼️ رفع شعار النادي / الرعاة
-                <input type="file" id="logoUpload" accept="image/*" style="display:none;" onchange="uploadLogo(event)">
+            <button class="btn" onclick="addNewCustomText()">+ إضافة مربع نص</button>
+            <label class="btn" style="cursor: pointer; justify-content: center;">
+                🖼️ رفع شعار النادي / الرعاة (PNG / JPG)
+                <input type="file" id="logoUploadInput" accept="image/png,image/jpeg" style="display: none;" onchange="loadLogoImage(event)">
             </label>
+            <button class="btn" onclick="deleteSelected()">🗑️ حذف العنصر المحدد</button>
         </div>
 
         <div class="sidebar-section">
             <span class="section-title">3. تخصيص الخطوط والمظهر</span>
 
+            <div class="control-row" id="rowText" style="display:none;">
+                <label id="labelText">النص:</label>
+                <input type="text" id="textInput" oninput="applyText(this.value)">
+            </div>
+
             <div class="control-row">
                 <label>نوع الخط:</label>
                 <select id="fontSelect" onchange="applyFont(this.value)">
-                    <optgroup label="خطوط رياضية لاتينية">
-                        <option value="Teko" selected>Teko</option>
-                        <option value="Bebas Neue">Bebas Neue</option>
-                        <option value="Impact">Impact</option>
-                        <option value="Barlow Condensed">Barlow Condensed</option>
-                        <option value="Anton">Anton</option>
-                        <option value="Russo One">Russo One</option>
-                        <option value="Chakra Petch">Chakra Petch</option>
-                        <option value="Montserrat">Montserrat</option>
+                    <optgroup label="يدعم العربي والإنجليزي">
+                        <option value="Cairo">Cairo (رسمي وواضح)</option>
+                        <option value="Almarai">Almarai (المراعي ثقيل)</option>
+                        <option value="Tajawal">Tajawal (حديث)</option>
+                        <option value="Changa">Changa (رياضي عريض)</option>
+                        <option value="Readex Pro">Readex Pro (عصري)</option>
                     </optgroup>
-
-                    <optgroup label="خطوط عربية">
-                        <option value="Cairo">Cairo</option>
-                        <option value="Almarai">Almarai</option>
-                        <option value="Changa">Changa</option>
-                        <option value="Tajawal">Tajawal</option>
-                        <option value="Readex Pro">Readex Pro</option>
+                    <optgroup label="إنجليزي وأرقام فقط">
+                        <option value="Teko">Teko (رياضي مضغوط)</option>
+                        <option value="Bebas Neue">Bebas Neue (كلاسيكي)</option>
+                        <option value="Anton">Anton (عريض)</option>
+                        <option value="Montserrat">Montserrat (هندسي)</option>
+                        <option value="Russo One">Russo One (ثقيل)</option>
+                        <option value="Barlow Condensed">Barlow Condensed (ضيق)</option>
                     </optgroup>
                 </select>
             </div>
@@ -246,7 +231,7 @@
             </div>
 
             <div class="control-row">
-                <label>الإطار الخارجي:</label>
+                <label>لون الإطار الخارجي (Stroke):</label>
                 <div class="color-picker-box">
                     <input type="color" id="strokeColor" value="#000000" oninput="applyStroke(this.value)">
                     <input type="text" id="strokeHex" value="#000000" maxlength="7" onchange="applyStroke(this.value)">
@@ -254,548 +239,468 @@
             </div>
 
             <div class="control-row">
-                <label>سُمك الإطار:</label>
-                <input type="number" id="strokeWidth" value="2" min="0" max="25" oninput="applyStrokeWidth(this.value)">
+                <label>سُمك الإطار (0 = بدون إطار):</label>
+                <input type="number" id="strokeWidth" value="0" min="0" max="20" step="0.5" oninput="applyStrokeWidth(this.value)">
             </div>
         </div>
 
-        <div class="sidebar-section">
-            <span class="section-title">أدوات العرض والكانفاس</span>
-            <button class="btn" onclick="resetZoom()">🔍 إعادة ضبط مقاس العرض (100%)</button>
+        <div style="font-size:11px; color:var(--text-secondary); line-height:1.8;">
+            ℹ️ مربع <b>الاسم</b> و<b>الرقم</b> يحددان أقصى عرض للكتابة؛ إذا كان الاسم أطول من المربع يصغّر النظام الخط تلقائياً ليبقى داخله.
         </div>
-
     </aside>
 
     <main class="canvas-area">
         <div class="canvas-wrapper">
-            <canvas id="tshirtCanvas" width="900" height="650"></canvas>
+            <canvas id="jerseyCanvas" width="900" height="650"></canvas>
         </div>
-
         <div class="canvas-hint">
-            💡 استخدم عجلة الماوس للتقريب، واسحب العناصر لوضعها بدقة
+            💡 اسحب المربعات فوق الباترون إلى مكانها الصحيح، وغيّروا الحجم من الزوايا
         </div>
     </main>
-
 </div>
 
 <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    const canvas = new fabric.Canvas('tshirtCanvas');
+    const API = 'http://127.0.0.1:5000';
+    const PRINT_SIZE = 'M';
     const themeAccent = '#baa58c';
+    const FONT_FAMILIES = ['Cairo', 'Almarai', 'Tajawal', 'Changa', 'Readex Pro', 'Teko', 'Bebas Neue', 'Anton', 'Montserrat', 'Russo One', 'Barlow Condensed'];
+    // هذه الخطوط لها وزن عادي فقط (لا نسمح للمتصفح بتغليظها صناعياً حتى يطابق ملف الطباعة)
+    const REGULAR_ONLY = ['Bebas Neue', 'Anton', 'Russo One'];
+    const weightOf = f => REGULAR_ONLY.includes(f) ? 'normal' : 'bold';
 
-    // بيانات اللاعبين
-    const savedRoster = JSON.parse(
-        localStorage.getItem('sportway_roster') || '[]'
-    );
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // معرفة هل المحرر مفتوح لتعديل لاعب معين
-    const params = new URLSearchParams(window.location.search);
-    const editPlayerId = params.get('playerId');
+    const canvas = new fabric.Canvas('jerseyCanvas', { width: 900, height: 650, backgroundColor: '#ffffff', preserveObjectStacking: true });
+    let patternInfo = null; // { wPt, hPt }
 
-    const playerToEdit = savedRoster.find(
-        player => String(player.id) === String(editPlayerId)
-    );
+    // ---------- أدوات إنشاء العناصر (الإحداثيات كلها نسب مئوية من الباترون) ----------
+    const baseCtl = { borderColor: themeAccent, cornerColor: themeAccent, cornerSize: 8, transparentCorners: false, lockRotation: true };
 
-    const isEditingPlayer = Boolean(playerToEdit);
+    // عنصر نص مخصص: المركز = مركز النص المرسوم فعلياً (يتفادى مشاكل محاذاة Textbox مع العربي)
+    fabric.CText = fabric.util.createClass(fabric.Object, {
+        type: 'ctext',
+        text: '', fontSize: 40, fontFamily: 'Cairo', fontWeight: 'bold',
+        objectCaching: false,
+        initialize: function (text, options) {
+            this.callSuper('initialize', options || {});
+            this.text = String(text ?? '');
+            this.updateDims();
+        },
+        _font: function () { return `${this.fontWeight} ${this.fontSize}px "${this.fontFamily}", Cairo, sans-serif`; },
+        updateDims: function () {
+            const c = fabric.util.createCanvasElement().getContext('2d');
+            c.font = this._font();
+            const m = c.measureText(this.text || ' ');
+            this._asc = m.fontBoundingBoxAscent || this.fontSize * 0.95;
+            this._desc = m.fontBoundingBoxDescent || this.fontSize * 0.35;
+            this.set({ width: Math.max(4, m.width), height: this._asc + this._desc });
+            this.setCoords();
+        },
+        _render: function (ctx) {
+            ctx.font = this._font();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            if (/[\u0600-\u06FF]/.test(this.text)) ctx.direction = 'rtl';
+            const y = (this._asc - this._desc) / 2;   // نفس توسيط الخط الذي يستخدمه المتصفح والسيرفر
+            if (this.fill) { ctx.fillStyle = this.fill; ctx.fillText(this.text, 0, y); }
+            if (this.stroke && this.strokeWidth > 0) {
+                ctx.lineWidth = this.strokeWidth; ctx.strokeStyle = this.stroke; ctx.lineJoin = 'round';
+                ctx.strokeText(this.text, 0, y);
+            }
+        }
+    });
 
-    const sampleName = isEditingPlayer
-        ? playerToEdit.name
-        : (savedRoster[0]?.name || 'الوليد');
-
-    const sampleNum = isEditingPlayer
-        ? playerToEdit.number
-        : (savedRoster[0]?.number || '18');
-
-    // التصاميم الفردية
-    let playerDesigns = JSON.parse(
-        localStorage.getItem('sportway_player_designs') || '{}'
-    );
-
-    // التصميم الفردي أو التصميم الأساسي
-    const individualDesign = isEditingPlayer
-        ? playerDesigns[editPlayerId]
-        : null;
-
-    const baseBg = localStorage.getItem('sportway_current_design_bg');
-    const baseLayout = JSON.parse(
-        localStorage.getItem('sportway_design_layout') || '[]'
-    );
-
-    // عند التعديل نستخدم تصميم اللاعب، أو التصميم الأساسي إذا لم يكن له تصميم
-    const designToLoad = individualDesign || (
-        isEditingPlayer
-            ? { bg: baseBg, layout: baseLayout }
-            : null
-    );
-
-    // تغيير الأزرار حسب وضع المحرر
-    if (isEditingPlayer) {
-        document.getElementById('saveButton').textContent =
-            '💾 حفظ تعديل اللاعب والعودة للمعاينة';
-
-        document.getElementById('backButton').href = 'preview.html';
-        document.getElementById('backButton').textContent =
-            '➔ العودة للمعاينة';
+    function makeText(text, o) {
+        const W = canvas.width, H = canvas.height;
+        const t = new fabric.CText(text, {
+            ...baseCtl,
+            originX: 'center', originY: 'center',
+            left: (o.cx / 100) * W, top: (o.cy / 100) * H,
+            fontSize: o.rel * H, fontFamily: o.family, fontWeight: weightOf(o.family),
+            fill: o.fill || '#ffffff', stroke: o.stroke || '#000000',
+            strokeWidth: (o.strokeRel || 0) * H
+        });
+        t.setControlsVisibility({ mtr: false, mt: false, mb: false, ml: false, mr: false });
+        t.elementRole = o.role;
+        canvas.add(t);
+        return t;
     }
 
-    // إنشاء مربع النص
-    function createTextBox(text, options = {}) {
-        return new fabric.Textbox(text, {
-            left: 100,
-            top: 180,
-            width: 140,
-            fontSize: 26,
-            fontFamily: 'Cairo',
-            fontWeight: 'bold',
-            fill: '#ffffff',
-            stroke: '#000000',
-            strokeWidth: 2,
-            textAlign: 'center',
-            borderColor: themeAccent,
-            cornerColor: themeAccent,
-            cornerSize: 7,
-            transparentCorners: false,
-            ...options
-        });
-    }
-
-    // إضافة النصوص الافتراضية في التصميم الأساسي
-    function addDefaultTextBoxes() {
-        const nameBox = createTextBox(sampleName, {
-            left: 100,
-            top: 180,
-            fontSize: 26,
-            fontFamily: 'Cairo'
-        });
-
-        const numberBox = createTextBox(sampleNum, {
-            left: 100,
-            top: 230,
-            fontSize: 70,
-            fontFamily: 'Teko'
-        });
-
-        canvas.add(nameBox);
-        canvas.add(numberBox);
-    }
-
-    // تحميل خلفية التصميم
-    function loadBackground(bgDataUrl) {
+    function makeImage(src, assetId, o) {
         return new Promise(resolve => {
-            if (!bgDataUrl) {
-                resolve(false);
-                return;
-            }
-
-            fabric.Image.fromURL(bgDataUrl, function(img) {
-                if (!img) {
-                    resolve(false);
-                    return;
-                }
-
-                canvas.setBackgroundImage(
-                    img,
-                    function() {
-                        canvas.renderAll();
-                        resolve(true);
-                    },
-                    {
-                        originX: 'left',
-                        originY: 'top',
-                        left: 0,
-                        top: 0,
-                        scaleX: canvas.width / img.width,
-                        scaleY: canvas.height / img.height
-                    }
-                );
-            });
+            fabric.Image.fromURL(src, img => {
+                const W = canvas.width, H = canvas.height;
+                img.set({ ...baseCtl, originX: 'center', originY: 'center',
+                    left: ((o.cx ?? 50) / 100) * W, top: ((o.cy ?? 60) / 100) * H });
+                img.scaleToWidth(o.w ? (o.w / 100) * W : W * 0.12);
+                img.setControlsVisibility({ mtr: false });
+                img.elementRole = 'static_asset';
+                img.assetId = assetId;
+                canvas.add(img);
+                resolve(img);
+            }, { crossOrigin: 'anonymous' });
         });
     }
 
-    // تحميل النصوص المحفوظة
-    function loadSavedLayout(layout) {
-        if (!Array.isArray(layout) || layout.length === 0) {
-            return false;
-        }
-
-        let nameUsed = false;
-        let numberUsed = false;
-
-        layout.forEach(item => {
-            if (item.type !== 'text') return;
-
-            let text = item.text || '';
-
-            const isNumber = /^[0-9]+$/.test(String(text).trim());
-
-            // استبدال الاسم والرقم ببيانات اللاعب الحالي
-            if (!isNumber && !nameUsed) {
-                text = sampleName;
-                nameUsed = true;
-            } else if (isNumber && !numberUsed) {
-                text = sampleNum;
-                numberUsed = true;
-            }
-
-            const fontSize = Math.max(
-                8,
-                (item.relativeFontSize || 0.04) * canvas.height
-            );
-
-            const centerX = (item.centerXPercent / 100) * canvas.width;
-            const centerY = (item.centerYPercent / 100) * canvas.height;
-
-            const box = createTextBox(text, {
-                left: centerX,
-                top: centerY,
-                originX: 'center',
-                originY: 'center',
-                width: 140,
-                fontSize: fontSize,
-                fontFamily: item.fontFamily || 'Cairo',
-                fill: item.fill || '#ffffff',
-                stroke: item.stroke || '#000000',
-                strokeWidth: item.strokeWidth || 0
-            });
-
-            canvas.add(box);
+    // ---------- تحميل الباترون: يضبط الكانفاس على نسبة الباترون الحقيقية ----------
+    function fitCanvasToPattern(pw, ph) {
+        const area = document.querySelector('.canvas-area');
+        const maxW = Math.max(400, Math.min(1100, area.clientWidth - 40));
+        const maxH = Math.max(300, area.clientHeight - 80);
+        const s = Math.min(maxW / pw, maxH / ph);
+        const nw = Math.round(pw * s), nh = Math.round(ph * s);
+        const ow = canvas.width, oh = canvas.height;
+        if (nw === ow && nh === oh) return;
+        const fy = nh / oh;
+        canvas.getObjects().forEach(o => {
+            o.left *= nw / ow; o.top *= nh / oh;
+            if (o.isType('ctext')) {
+                o.set({ fontSize: o.fontSize * fy, strokeWidth: (o.strokeWidth || 0) * fy });
+                o.updateDims();
+            } else { o.scaleX *= fy; o.scaleY *= fy; }
+            o.setCoords();
         });
-
-        return canvas.getObjects('textbox').length > 0;
+        canvas.setDimensions({ width: nw, height: nh });
     }
 
-    // تحميل التصميم عند فتح المحرر
-    async function initializeEditor() {
-        if (isEditingPlayer && designToLoad) {
-            await loadBackground(designToLoad.bg);
+    async function renderPatternPdf(arrayBuffer) {
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        const page = await pdf.getPage(1);
+        const v1 = page.getViewport({ scale: 1 });
+        // للعرض فقط: نحدد الدقة بحيث لا يتجاوز أكبر بُعد ~2200px (الباترون الحقيقي يبقى كما هو في السيرفر)
+        const scale = Math.min(2200 / Math.max(v1.width, v1.height), 4);
+        const vp = page.getViewport({ scale });
+        const tmp = document.createElement('canvas');
+        tmp.width = Math.round(vp.width); tmp.height = Math.round(vp.height);
+        const ctx = tmp.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, tmp.width, tmp.height);
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
 
-            const loaded = loadSavedLayout(designToLoad.layout);
+        fitCanvasToPattern(v1.width, v1.height);
+        patternInfo = { wPt: v1.width, hPt: v1.height };
 
-            if (!loaded) {
-                addDefaultTextBoxes();
-            }
+        await new Promise(res => fabric.Image.fromURL(tmp.toDataURL('image/jpeg', 0.88), img => {
+            img.set({ left: 0, top: 0, scaleX: canvas.width / img.width, scaleY: canvas.height / img.height, selectable: false, evented: false });
+            canvas.setBackgroundImage(img, () => { canvas.renderAll(); res(); });
+        }));
 
-            canvas.renderAll();
-        } else {
-            addDefaultTextBoxes();
-        }
+        const cm = (v) => (v / 72 * 2.54).toFixed(1);
+        document.getElementById('patternStatus').innerText = `✅ الباترون: ${cm(v1.width)} × ${cm(v1.height)} سم`;
     }
 
-    initializeEditor();
-
-    // حفظ صورة الخلفية في IndexedDB
-    function saveImageToDB(dataUrl) {
-        const request = indexedDB.open('SportWayDB', 1);
-
-        request.onupgradeneeded = function(e) {
-            const db = e.target.result;
-
-            if (!db.objectStoreNames.contains('assets')) {
-                db.createObjectStore('assets');
-            }
-        };
-
-        request.onsuccess = function(e) {
-            const db = e.target.result;
-            const tx = db.transaction('assets', 'readwrite');
-
-            tx.objectStore('assets').put(dataUrl, 'jersey_bg');
-        };
-    }
-
-    // رفع ملف PDF
-    function loadPdfJersey(e) {
+    async function loadPdfJersey(e) {
         const file = e.target.files[0];
-
-        if (!file || file.type !== 'application/pdf') return;
-
-        const fileReader = new FileReader();
-
-        fileReader.onload = function() {
-            const typedarray = new Uint8Array(this.result);
-
-            pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                pdf.getPage(1).then(function(page) {
-                    const viewport = page.getViewport({ scale: 1.5 });
-
-                    const tempCanvas = document.createElement('canvas');
-                    const context = tempCanvas.getContext('2d');
-
-                    tempCanvas.height = viewport.height;
-                    tempCanvas.width = viewport.width;
-
-                    page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise.then(function() {
-                        const bgDataUrl = tempCanvas.toDataURL(
-                            'image/jpeg',
-                            0.85
-                        );
-
-                        saveImageToDB(bgDataUrl);
-
-                        fabric.Image.fromURL(bgDataUrl, function(img) {
-                            const scale = Math.min(
-                                canvas.width / img.width,
-                                canvas.height / img.height
-                            );
-
-                            canvas.setBackgroundImage(
-                                img,
-                                canvas.renderAll.bind(canvas),
-                                {
-                                    scaleX: scale,
-                                    scaleY: scale,
-                                    left: (canvas.width - img.width * scale) / 2,
-                                    top: (canvas.height - img.height * scale) / 2
-                                }
-                            );
-                        });
-                    });
-                });
-            });
-        };
-
-        fileReader.readAsArrayBuffer(file);
-    }
-
-    // التقريب والتبعيد
-    canvas.on('mouse:wheel', function(opt) {
-        const delta = opt.e.deltaY;
-
-        let zoom = canvas.getZoom();
-        zoom *= 0.999 ** delta;
-
-        if (zoom > 4) zoom = 4;
-        if (zoom < 0.8) zoom = 0.8;
-
-        canvas.zoomToPoint(
-            { x: opt.e.offsetX, y: opt.e.offsetY },
-            zoom
-        );
-
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
-    });
-
-    function resetZoom() {
-        canvas.setZoom(1);
-        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    }
-
-    // الحذف بزر Delete أو Backspace
-    window.addEventListener('keydown', e => {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-            const active = canvas.getActiveObject();
-
-            if (active && !active.isEditing) {
-                canvas.remove(active);
-                canvas.discardActiveObject();
-                canvas.renderAll();
-            }
+        if (!file) return;
+        const buf = await file.arrayBuffer();
+        try {
+            await renderPatternPdf(buf);
+        } catch (err) {
+            alert('حدث خطأ أثناء قراءة ملف الـ PDF: ' + err.message);
+            return;
         }
-    });
+        // رفع الملف الأصلي للسيرفر ليُستخدم في الطباعة بجودته الكاملة
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('size', PRINT_SIZE);
+        try {
+            const r = await fetch(`${API}/api/upload-template`, { method: 'POST', body: fd });
+            const res = await r.json();
+            if (!res.success) throw new Error(res.message);
+            document.getElementById('patternStatus').innerText = `✅ الباترون: ${res.widthCm} × ${res.heightCm} سم (محفوظ في السيرفر)`;
+            if (res.pages > 1) alert('تنبيه: الملف فيه أكثر من صفحة، سيتم استخدام الصفحة الأولى فقط.');
+            if (res.rotation) alert('تنبيه: الباترون مدوَّر (Rotation) وسيرفضه السيرفر. صدّروه بدون تدوير.');
+        } catch (err) {
+            alert('⚠️ تعذّر رفع الباترون للسيرفر. تأكدوا من تشغيل: python print_server.py\n' + err.message);
+        }
+    }
 
+    // ---------- الشعارات والنصوص ----------
+    async function loadLogoImage(e) {
+        const file = e.target.files[0];
+        e.target.value = '';
+        if (!file) return;
+        const fd = new FormData();
+        fd.append('file', file);
+        try {
+            const r = await fetch(`${API}/api/upload-asset`, { method: 'POST', body: fd });
+            const res = await r.json();
+            if (!res.success) throw new Error(res.message);
+            const img = await makeImage(URL.createObjectURL(file), res.assetId, { cx: 50, cy: 60 });
+            canvas.setActiveObject(img);
+            canvas.renderAll();
+        } catch (err) {
+            alert('تعذّر رفع الشعار. تأكدوا من تشغيل السيرفر.\n' + err.message);
+        }
+    }
+
+    function addNewCustomText() {
+        const t = makeText('نص إضافي', { cx: 50, cy: 70, w: 22, rel: 0.03, family: 'Cairo', role: 'static_asset' });
+        canvas.setActiveObject(t);
+        canvas.renderAll();
+    }
+
+    function deleteSelected() {
+        const o = canvas.getActiveObject();
+        if (!o) return;
+        if (o.elementRole === 'name_placeholder' || o.elementRole === 'number_placeholder') {
+            alert('مربعا الاسم والرقم أساسيان ولا يمكن حذفهما.');
+            return;
+        }
+        canvas.remove(o);
+        canvas.discardActiveObject();
+        canvas.renderAll();
+    }
+
+    // ---------- أدوات المظهر ----------
+    function activeTextObj() {
+        const o = canvas.getActiveObject();
+        return (o && o.isType('ctext')) ? o : null;
+    }
+    function applyFont(val) {
+        const o = activeTextObj();
+        if (!o) return;
+        document.fonts.load(`bold 40px "${val}"`).then(() => {
+            o.set({ fontFamily: val, fontWeight: weightOf(val) });
+            o.updateDims();
+            canvas.requestRenderAll();
+        });
+    }
+    function applyFill(val) {
+        document.getElementById('fillHex').value = val;
+        if (/^#[0-9a-f]{6}$/i.test(val)) document.getElementById('fillColor').value = val;
+        const o = activeTextObj();
+        if (o) { o.set('fill', val); canvas.requestRenderAll(); }
+    }
+    function applyStroke(val) {
+        document.getElementById('strokeHex').value = val;
+        if (/^#[0-9a-f]{6}$/i.test(val)) document.getElementById('strokeColor').value = val;
+        const o = activeTextObj();
+        if (o) { o.set('stroke', val); canvas.requestRenderAll(); }
+    }
+    function applyStrokeWidth(val) {
+        const o = activeTextObj();
+        if (o) { o.set('strokeWidth', Math.max(0, parseFloat(val) || 0)); canvas.requestRenderAll(); }
+    }
+    function applyText(val) {
+        const o = activeTextObj();
+        if (o) { o.set('text', val); o.updateDims(); canvas.requestRenderAll(); }
+    }
+    function syncControls() {
+        const o = activeTextObj();
+        const row = document.getElementById('rowText');
+        if (!o) { row.style.display = 'none'; return; }
+        row.style.display = '';
+        let label = 'النص:';
+        const isName = o.elementRole === 'name_placeholder', isNum = o.elementRole === 'number_placeholder';
+        if (typeof IS_PLAYER !== 'undefined' && IS_PLAYER) label = isName ? 'الاسم على هذا التيشيرت:' : (isNum ? 'الرقم على هذا التيشيرت:' : 'النص:');
+        else if (isName) label = 'نص الاسم التجريبي — اكتبوا أطول اسم متوقع، فعرضه هو أقصى عرض مسموح:';
+        else if (isNum) label = 'الرقم التجريبي:';
+        document.getElementById('labelText').innerText = label;
+        document.getElementById('textInput').value = o.text;
+        document.getElementById('fontSelect').value = o.fontFamily;
+        document.getElementById('fillColor').value = o.fill; document.getElementById('fillHex').value = o.fill;
+        document.getElementById('strokeColor').value = o.stroke; document.getElementById('strokeHex').value = o.stroke;
+        document.getElementById('strokeWidth').value = o.strokeWidth || 0;
+    }
     canvas.on('selection:created', syncControls);
     canvas.on('selection:updated', syncControls);
 
-    function syncControls() {
-        const active = canvas.getActiveObject();
-
-        if (active && active.isType('textbox')) {
-            if (active.fontFamily) {
-                document.getElementById('fontSelect').value =
-                    active.fontFamily;
-            }
-
-            if (active.fill) {
-                document.getElementById('fillColor').value = active.fill;
-                document.getElementById('fillHex').value = active.fill;
-            }
-
-            if (active.stroke) {
-                document.getElementById('strokeColor').value = active.stroke;
-                document.getElementById('strokeHex').value = active.stroke;
-            }
-
-            document.getElementById('strokeWidth').value =
-                active.strokeWidth || 0;
-        }
-    }
-
-    function applyFont(val) {
-        const active = canvas.getActiveObject();
-
-        if (active && active.isType('textbox')) {
-            active.set('fontFamily', val);
-            canvas.renderAll();
-        }
-    }
-
-    function applyFill(val) {
-        if (!/^#[0-9A-Fa-f]{6}$/.test(val)) return;
-
-        document.getElementById('fillColor').value = val;
-        document.getElementById('fillHex').value = val;
-
-        const active = canvas.getActiveObject();
-
-        if (active && active.isType('textbox')) {
-            active.set('fill', val);
-            canvas.renderAll();
-        }
-    }
-
-    function applyStroke(val) {
-        if (!/^#[0-9A-Fa-f]{6}$/.test(val)) return;
-
-        document.getElementById('strokeColor').value = val;
-        document.getElementById('strokeHex').value = val;
-
-        const active = canvas.getActiveObject();
-
-        if (active && active.isType('textbox')) {
-            active.set('stroke', val);
-            canvas.renderAll();
-        }
-    }
-
-    function applyStrokeWidth(val) {
-        const w = parseInt(val, 10) || 0;
-        const active = canvas.getActiveObject();
-
-        if (active && active.isType('textbox')) {
-            active.set('strokeWidth', w);
-            canvas.renderAll();
-        }
-    }
-
-    // إضافة مربع نص
-    function addNewTextBox(text) {
-        const box = createTextBox(text, {
-            left: 100,
-            top: 350,
-            width: 140,
-            fontSize: 20,
-            fontFamily: document.getElementById('fontSelect').value,
-            fill: document.getElementById('fillColor').value,
-            stroke: document.getElementById('strokeColor').value,
-            strokeWidth: parseInt(
-                document.getElementById('strokeWidth').value,
-                10
-            ) || 0
-        });
-
-        canvas.add(box);
-        canvas.setActiveObject(box);
-    }
-
-    // رفع شعار
-    function uploadLogo(e) {
-        const file = e.target.files[0];
-
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.onload = function(evt) {
-            fabric.Image.fromURL(evt.target.result, function(img) {
-                img.scaleToWidth(70);
-
-                img.set({
-                    left: 100,
-                    top: 120,
-                    borderColor: themeAccent,
-                    cornerColor: themeAccent,
-                    cornerSize: 7,
-                    transparentCorners: false
-                });
-
-                canvas.add(img);
-                canvas.setActiveObject(img);
-            });
+    // ---------- تحويل العناصر إلى نسب مئوية من الباترون ----------
+    const geom = o => {
+        const W = canvas.width, H = canvas.height, c = o.getCenterPoint();
+        return {
+            centerXPercent: c.x / W * 100, centerYPercent: c.y / H * 100,
+            widthPercent: o.getScaledWidth() / W * 100, heightPercent: o.getScaledHeight() / H * 100
         };
+    };
+    const textCfg = o => {
+        const g = geom(o);
+        g.widthPercent *= 1.03; // هامش صغير حتى لا يصغّر السيرفر الخط بسبب فروق قياس الخطوط
+        return {
+            ...g,
+            fontFamily: o.fontFamily,
+            relativeFontSize: (o.fontSize * (o.scaleY || 1)) / canvas.height,
+            fill: o.fill || '#ffffff', stroke: o.stroke || '#000000',
+            strokeRel: ((o.strokeWidth || 0) * (o.scaleY || 1)) / canvas.height
+        };
+    };
+    const cfgSnap = o => {
+        const c = textCfg(o); delete c.widthPercent; delete c.heightPercent;
+        return JSON.stringify(Object.fromEntries(Object.entries(c).map(([k, v]) => [k, typeof v === 'number' ? Math.round(v * 1000) / 1000 : v])));
+    };
 
-        reader.readAsDataURL(file);
+    const params = new URLSearchParams(location.search);
+    const IS_PLAYER = params.has('player');
+    const PLAYER_IDX = IS_PLAYER ? parseInt(params.get('player'), 10) : -1;
+    const onConfirm = () => IS_PLAYER ? savePlayerEdit() : proceedToPreview();
+
+    // ================= وضع التصميم العام (كل الفريق) =================
+    async function initMaster() {
+        // أول دخول لطلبية جديدة = لوحة نظيفة. نسترجع التصميم فقط عند الرجوع من المعاينة في نفس الجلسة
+        const keep = sessionStorage.getItem('sportway_design_active') === '1';
+        let saved = {};
+        if (keep) {
+            try {
+                const r = await fetch(`${API}/api/template/${PRINT_SIZE}`);
+                if (r.ok) await renderPatternPdf(await r.arrayBuffer());
+            } catch (e) { console.warn('السيرفر غير متصل'); }
+            try { saved = JSON.parse(localStorage.getItem('sportway_master_template') || '{}'); } catch (e) {}
+        } else {
+            localStorage.removeItem('sportway_master_template');
+        }
+        const n = saved.nameConfig || {}, m = saved.numberConfig || {};
+
+        const nameBox = makeText(n.sampleText || 'الاسم التجريبي', {
+            cx: n.centerXPercent ?? 50, cy: n.centerYPercent ?? 30,
+            rel: n.relativeFontSize ?? 0.04, family: n.fontFamily || 'Cairo', fill: n.fill, stroke: n.stroke,
+            strokeRel: n.strokeRel || 0, role: 'name_placeholder'
+        });
+        makeText(m.sampleText || '10', {
+            cx: m.centerXPercent ?? 50, cy: m.centerYPercent ?? 45,
+            rel: m.relativeFontSize ?? 0.12, family: m.fontFamily || 'Teko', fill: m.fill, stroke: m.stroke,
+            strokeRel: m.strokeRel || 0, role: 'number_placeholder'
+        });
+        for (const el of (saved.staticElements || [])) await addStaticFromConfig(el, false);
+        canvas.setActiveObject(nameBox);
+        syncControls();
+        canvas.renderAll();
     }
 
-    // اعتماد التصميم أو حفظ تعديل اللاعب
+    async function addStaticFromConfig(el, locked) {
+        let o = null;
+        if (el.type === 'text') {
+            o = makeText(el.text || '', { cx: el.centerXPercent, cy: el.centerYPercent, w: el.widthPercent,
+                rel: el.relativeFontSize, family: el.fontFamily || 'Cairo', fill: el.fill, stroke: el.stroke,
+                strokeRel: el.strokeRel || 0, role: 'static_asset' });
+        } else if (el.type === 'image' && el.assetId) {
+            o = await makeImage(`${API}/api/asset/${el.assetId}`, el.assetId, { cx: el.centerXPercent, cy: el.centerYPercent, w: el.widthPercent });
+        }
+        if (o && locked) { o.set({ selectable: false, evented: false }); o.elementRole = 'context'; }
+    }
+
+    function newDesign() {
+        if (!confirm('بدء تصميم جديد؟ سيتم مسح التصميم الحالي (المكان والخطوط والشعارات).')) return;
+        localStorage.removeItem('sportway_master_template');
+        sessionStorage.removeItem('sportway_design_active');
+        location.href = 'editor.html';
+    }
+
     function proceedToPreview() {
-        if (isEditingPlayer && !playerToEdit) {
-            alert('لم يتم العثور على اللاعب المطلوب.');
-            return;
+        if (!patternInfo) { alert('ارفعوا ملف الباترون (PDF) أولاً.'); return; }
+        let nameConfig = null, numberConfig = null;
+        const staticElements = [];
+        for (const o of canvas.getObjects()) {
+            if (o.elementRole === 'name_placeholder') nameConfig = { ...textCfg(o), sampleText: o.text };
+            else if (o.elementRole === 'number_placeholder') numberConfig = { ...textCfg(o), sampleText: o.text };
+            else if (o.isType('image')) {
+                if (!o.assetId) { alert('أحد الشعارات لم يُرفع للسيرفر، احذفوه وأعيدوا رفعه.'); return; }
+                staticElements.push({ ...geom(o), type: 'image', assetId: o.assetId });
+            } else if (o.isType('ctext')) {
+                staticElements.push({ ...textCfg(o), type: 'text', text: o.text || '' });
+            }
         }
-
-        const textObjects = canvas.getObjects('textbox');
-
-        // حفظ مواضع النصوص وأحجامها
-        const layout = textObjects.map(obj => {
-            const centerPoint = obj.getCenterPoint();
-
-            return {
-                type: 'text',
-                text: obj.text || '',
-                fontFamily: obj.fontFamily || 'Cairo',
-
-                centerXPercent:
-                    (centerPoint.x / canvas.width) * 100,
-
-                centerYPercent:
-                    (centerPoint.y / canvas.height) * 100,
-
-                relativeFontSize:
-                    (obj.fontSize * (obj.scaleY || 1)) / canvas.height,
-
-                fill: obj.fill || '#000000',
-                stroke: obj.stroke || '#000000',
-                strokeWidth: obj.strokeWidth || 0
-            };
-        });
-
-        // إخفاء النصوص مؤقتًا لتصوير الخلفية
-        textObjects.forEach(obj => obj.visible = false);
-
-        canvas.renderAll();
-
-        const currentDesignBg = canvas.toDataURL({
-            format: 'png',
-            quality: 0.85
-        });
-
-        // إعادة إظهار النصوص
-        textObjects.forEach(obj => obj.visible = true);
-        canvas.renderAll();
-
-        if (isEditingPlayer) {
-            // حفظ تصميم اللاعب بشكل مستقل
-            playerDesigns[editPlayerId] = {
-                bg: currentDesignBg,
-                layout: layout
-            };
-
-            localStorage.setItem(
-                'sportway_player_designs',
-                JSON.stringify(playerDesigns)
-            );
-
-        } else {
-            // حفظ التصميم الأساسي المشترك
-            localStorage.setItem(
-                'sportway_current_design_bg',
-                currentDesignBg
-            );
-
-            localStorage.setItem(
-                'sportway_design_layout',
-                JSON.stringify(layout)
-            );
-        }
-
+        localStorage.setItem('sportway_master_template', JSON.stringify({
+            version: 2, size: PRINT_SIZE, pattern: patternInfo, nameConfig, numberConfig, staticElements
+        }));
+        localStorage.removeItem('sportway_current_design_bg');
+        sessionStorage.setItem('sportway_design_active', '1');
         window.location.href = 'preview.html';
     }
+
+    // ================= وضع تعديل تيشيرت واحد فقط =================
+    let initialSnap = {};
+
+    function makePlayerText(text, cfg, role) {
+        const t = makeText(String(text ?? ''), {
+            cx: cfg.centerXPercent, cy: cfg.centerYPercent, rel: cfg.relativeFontSize,
+            family: cfg.fontFamily, fill: cfg.fill, stroke: cfg.stroke, strokeRel: cfg.strokeRel || 0, role
+        });
+        // نفس منطق السيرفر: إذا الاسم أعرض من الصندوق المحدد يصغّر ليحتويه
+        const boxW = cfg.widthPercent / 100 * canvas.width;
+        if (t.width > boxW && boxW > 0) {
+            const k = boxW / t.width;
+            t.set({ fontSize: t.fontSize * k, strokeWidth: (t.strokeWidth || 0) * k });
+            t.updateDims();
+        }
+        return t;
+    }
+
+    async function initPlayer() {
+        const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+        const master = JSON.parse(localStorage.getItem('sportway_master_template') || '{}');
+        const p = roster[PLAYER_IDX];
+        if (!p || !master.nameConfig || !master.numberConfig) {
+            alert('لا توجد بيانات كافية. ارجعوا للمعاينة.');
+            location.href = 'preview.html';
+            return;
+        }
+        // تهيئة الواجهة لهذا الوضع
+        document.getElementById('titleText').innerText = 'تعديل تيشيرت فردي';
+        document.getElementById('sizeTag').innerText = `— ${p.name} (#${p.number})`;
+        document.getElementById('secPattern').style.display = 'none';
+        document.getElementById('secElements').style.display = 'none';
+        document.getElementById('newDesignBtn').style.display = 'none';
+        document.getElementById('resetPlayerBtn').style.display = '';
+        document.getElementById('backBtn').href = 'preview.html';
+        document.getElementById('backBtn').innerText = '➔ إلغاء والعودة';
+        document.getElementById('confirmBtn').innerText = '💾 حفظ والعودة للمعاينة';
+        const info = document.getElementById('playerInfo');
+        info.style.display = '';
+        info.innerHTML = `✏️ تعديل <b>خاص بهذا التيشيرت فقط</b>.<br>حرّكوا الاسم والرقم، غيّروا حجمهم من الزوايا، وعدّلوا النص أو الخط واللون من القائمة الجانبية. باقي اللاعبين لا يتأثرون.`;
+
+        const r = await fetch(`${API}/api/template/${PRINT_SIZE}`).catch(() => null);
+        if (!r || !r.ok) { alert('تعذّر تحميل الباترون من السيرفر. شغّلوا print_server.py'); location.href = 'preview.html'; return; }
+        await renderPatternPdf(await r.arrayBuffer());
+
+        for (const el of (master.staticElements || [])) await addStaticFromConfig(el, true);
+
+        const e = p.edit || {};
+        const nameObj = makePlayerText(e.name ?? p.name, { ...master.nameConfig, ...(e.nameCfg || {}) }, 'name_placeholder');
+        const numObj = makePlayerText(e.number ?? p.number, { ...master.numberConfig, ...(e.numCfg || {}) }, 'number_placeholder');
+        initialSnap = { name: cfgSnap(nameObj), num: cfgSnap(numObj) };
+        canvas.setActiveObject(nameObj);
+        syncControls();
+        canvas.renderAll();
+    }
+
+    function savePlayerEdit() {
+        const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+        const p = roster[PLAYER_IDX];
+        const objs = canvas.getObjects();
+        const nameObj = objs.find(o => o.elementRole === 'name_placeholder');
+        const numObj = objs.find(o => o.elementRole === 'number_placeholder');
+        const e = p.edit || {};
+
+        const nm = (nameObj.text || '').trim(), nb = (numObj.text || '').trim();
+        if (nm !== String(p.name ?? '')) e.name = nm; else delete e.name;
+        if (nb !== String(p.number ?? '')) e.number = nb; else delete e.number;
+
+        const withPad = o => textCfg(o);
+        if (cfgSnap(nameObj) !== initialSnap.name) e.nameCfg = withPad(nameObj);
+        if (cfgSnap(numObj) !== initialSnap.num) e.numCfg = withPad(numObj);
+        delete e.nameScale; delete e.numScale;
+
+        if (Object.keys(e).length) p.edit = e; else delete p.edit;
+        localStorage.setItem('sportway_roster', JSON.stringify(roster));
+        location.href = 'preview.html';
+    }
+
+    function resetPlayerDesign() {
+        const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+        const p = roster[PLAYER_IDX];
+        if (p && p.edit) {
+            delete p.edit.nameCfg; delete p.edit.numCfg;
+            if (!Object.keys(p.edit).length) delete p.edit;
+            localStorage.setItem('sportway_roster', JSON.stringify(roster));
+        }
+        location.reload();
+    }
+
+    async function init() {
+        await Promise.all(FONT_FAMILIES.map(f => document.fonts.load(`${weightOf(f)} 40px "${f}"`).catch(() => {})));
+        if (IS_PLAYER) await initPlayer(); else await initMaster();
+    }
+    window.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>

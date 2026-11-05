@@ -452,6 +452,10 @@
         renderArchive();
     });
 
+    // حماية من الأسماء التي تحتوي علامات اقتباس أو رموز HTML
+    const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const normSize = v => { v = String(v || 'M').toUpperCase().trim(); return ['S','M','L','XL'].includes(v) ? v : 'M'; };
+
     // دوال الجدول
     function appendPlayerRow(name = '', num = '', jSize = 'M', sSize = 'M') {
         const tbody = document.getElementById('rosterBody');
@@ -459,8 +463,8 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
                 <td style="text-align: center; color: var(--text-tertiary);">${rowCount}</td>
-                <td><input type="text" value="${name}" class="input-name" placeholder="اسم اللاعب"></td>
-                <td><input type="text" value="${num}" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
+                <td><input type="text" value="${esc(name)}" class="input-name" placeholder="اسم اللاعب"></td>
+                <td><input type="text" value="${esc(num)}" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
                 <td>
                     <select class="select-jsize">
                         <option value="S" ${jSize === 'S' ? 'selected' : ''}>S</option>
@@ -491,6 +495,7 @@
     }
 
     function resetTable() {
+        sessionStorage.removeItem('sportway_design_active'); // طلبية جديدة = محرر نظيف
         const tbody = document.getElementById('rosterBody');
         tbody.innerHTML = '';
         appendPlayerRow();
@@ -514,10 +519,10 @@
                 for (let i = 1; i < rows.length; i++) {
                     const r = rows[i];
                     if (r && (r[0] || r[1])) {
-                        const name = r[0] || '';
-                        const num = r[1] || '';
-                        const jSize = (r[2] || 'M').toString().toUpperCase().trim();
-                        const sSize = (r[3] || jSize).toString().toUpperCase().trim();
+                        const name = String(r[0] ?? '').trim();
+                        const num = String(r[1] ?? '').trim();
+                        const jSize = normSize(r[2]);
+                        const sSize = normSize(r[3] || jSize);
                         appendPlayerRow(name, num, jSize, sSize);
                     }
                 }
@@ -542,7 +547,7 @@
             div.className = 'archive-item';
             div.innerHTML = `
                     <div class="archive-meta">
-                        <h4>${order.title}</h4>
+                        <h4>${esc(order.title)}</h4>
                         <span>${order.roster.length} لاعبين | ${order.date}</span>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
@@ -567,6 +572,7 @@
         const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
         const order = savedOrders[index];
         if (!order) return;
+        sessionStorage.removeItem('sportway_design_active');
 
         const tbody = document.getElementById('rosterBody');
         tbody.innerHTML = '';
@@ -600,7 +606,8 @@
 
         const titleInput = document.getElementById('orderTitle').value.trim();
         if (titleInput) {
-            const savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+            let savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
+            savedOrders = savedOrders.filter(o => o.title !== titleInput); // نفس الاسم يستبدل القديم بدل التكرار
             savedOrders.unshift({
                 title: titleInput,
                 roster: roster,
@@ -609,19 +616,10 @@
             localStorage.setItem('sportway_orders_archive', JSON.stringify(savedOrders.slice(0, 10)));
         }
 
+        localStorage.setItem('sportway_order_title', titleInput);
         localStorage.setItem('sportway_roster', JSON.stringify(roster));
         window.location.href = "editor.html";
     }
-    // إخفاء شاشة البداية فوراً ومنع الشاشة البيضاء
-    window.addEventListener('DOMContentLoaded', () => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            setTimeout(() => {
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 300);
-            }, 500);
-        }
-    });
 </script>
 </body>
 </html>
