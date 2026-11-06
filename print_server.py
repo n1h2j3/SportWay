@@ -337,6 +337,49 @@ def template_preview(size):
     return Response(data, mimetype="image/png", headers={"Cache-Control": "no-store"})
 
 
+@app.route("/api/analyze-template/<size>")
+def analyze_template(size):
+    """يحدد القطعة الخلفية للتيشيرت (الأقل عمقاً في فتحة الرقبة) ويرجع حدودها كنسب من الصفحة.
+    يستخدمها المحرر لوضع الاسم والرقم تلقائياً في المكان المناسب لكل مقاس."""
+    path = find_template(norm_size(size))
+    if not path:
+        return jsonify({"success": False, "message": "لا يوجد باترون"}), 404
+    try:
+        doc = fitz.open(path)
+        page = doc[0]
+        pr = page.rect
+        pieces = []
+        for d in page.get_drawings():
+            r = d.get("rect")
+            if r is None or r.width < pr.width * 0.15 or r.height < pr.height * 0.15:
+                continue
+            pts = []
+            for it in d.get("items", []):
+                if it[0] in ("l", "c"):
+                    pts.append(it[1])
+                    pts.append(it[-1])
+            if len(pts) >= 20:
+                pieces.append((r.width * r.height, r, pts))
+        pieces.sort(key=lambda t: -t[0])
+        pieces = pieces[:2]  # أكبر قطعتين = ظهر وأمام التيشيرت
+        if len(pieces) < 2:
+            doc.close()
+            return jsonify({"success": False, "message": "لم يتم التعرف على قطعتي التيشيرت"})
+        best = None
+        for _, r, pts in pieces:
+            mid = [p.y for p in pts if r.x0 + 0.3 * r.width < p.x < r.x0 + 0.7 * r.width and p.y < r.y0 + 0.3 * r.height]
+            depth = (max(mid) - r.y0) / r.height if mid else 1.0
+            if best is None or depth < best[0]:
+                best = (depth, r)
+        r = best[1]
+        box = [(r.x0 - pr.x0) / pr.width, (r.y0 - pr.y0) / pr.height,
+               (r.x1 - pr.x0) / pr.width, (r.y1 - pr.y0) / pr.height]
+        doc.close()
+        return jsonify({"success": True, "backBox": box})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+
 @app.route("/api/upload-asset", methods=["POST"])
 def upload_asset():
     """يحفظ الشعار بملفه الأصلي بالدقة الكاملة."""

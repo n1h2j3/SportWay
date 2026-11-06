@@ -157,6 +157,9 @@
             padding: 6px 14px;
             border-radius: 20px;
         }
+        .size-tab { background: var(--bg-elevated, #18232f); color: var(--text-secondary, #9cb0bf); border: 1px solid var(--border-subtle, #223242); padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-inline-start: 6px; font-family: inherit; }
+        .size-tab:hover { color: var(--text-primary, #e6ebed); }
+        .size-tab.active { background: var(--accent-gold, #baa58c); color: #0a1118; border-color: var(--accent-gold, #baa58c); }
     </style>
 </head>
 <body>
@@ -166,21 +169,23 @@
         <a href="index.html" class="btn" id="backBtn">➔ القائمة والبيانات</a>
         <button class="btn" id="newDesignBtn" onclick="newDesign()">🆕 تصميم جديد</button>
         <button class="btn" id="resetPlayerBtn" onclick="resetPlayerDesign()" style="display:none">↺ استرجاع التصميم العام</button>
-        <button class="btn btn-success" id="confirmBtn" onclick="onConfirm()">تأكيد واعتماد التصميم ➔</button>
+        <button class="btn btn-success" id="confirmBtn" onclick="onConfirm()">تأكيد واعتماد التصاميم ➔</button>
     </div>
-    <div class="header-title"><span id="titleText">محرر ومطابقة التصميم على الباترون</span> <span id="sizeTag" style="color:var(--accent-gold)">— مقاس M</span></div>
+    <div class="header-title"><span id="titleText">محرر التصاميم — لكل مقاس باترون وتصميم مستقل</span> <span id="sizeTabs"></span></div>
 </header>
 
 <div class="editor-container">
     <aside class="sidebar">
         <div id="playerInfo" style="display:none; background:#1c2a1d; border:1px solid #2e7d32; border-radius:6px; padding:10px 12px; font-size:12px; line-height:1.9;"></div>
+
         <div class="sidebar-section" id="secPattern">
-            <span class="section-title">1. باترون التيشيرت الأساسي</span>
+            <span class="section-title" id="patternLabel">1. باترون التيشيرت</span>
             <label class="btn" style="cursor: pointer; justify-content: center; background-color: #1e2c3a; border-color: #31465c;">
                 📄 رفع ملف الباترون (PDF)
                 <input type="file" id="pdfUploadInput" accept="application/pdf" style="display: none;" onchange="loadPdfJersey(event)">
             </label>
             <div id="patternStatus" style="font-size:11px; color:var(--text-secondary);">لم يتم رفع باترون بعد</div>
+            <button class="btn" onclick="autoLayout(true)" style="justify-content:center;">🎯 الموضع التلقائي للاسم والرقم</button>
         </div>
 
         <div class="sidebar-section" id="secElements">
@@ -190,7 +195,7 @@
                 🖼️ رفع شعار النادي / الرعاة (PNG / JPG)
                 <input type="file" id="logoUploadInput" accept="image/png,image/jpeg" style="display: none;" onchange="loadLogoImage(event)">
             </label>
-            <button class="btn" onclick="deleteSelected()">🗑️ حذف العنصر المحدد</button>
+            <div style="font-size:11px; color:var(--text-secondary);">🗑️ للحذف: حدّدوا العنصر واضغطوا <b>Delete</b> في الكيبورد</div>
         </div>
 
         <div class="sidebar-section">
@@ -198,7 +203,7 @@
 
             <div class="control-row" id="rowText" style="display:none;">
                 <label id="labelText">النص:</label>
-                <input type="text" id="textInput" oninput="applyText(this.value)">
+                <input type="text" id="textInput" autocomplete="off" oninput="applyText(this.value)">
             </div>
 
             <div class="control-row">
@@ -225,8 +230,8 @@
             <div class="control-row">
                 <label>لون النص الداخلي:</label>
                 <div class="color-picker-box">
-                    <input type="color" id="fillColor" value="#ffffff" oninput="applyFill(this.value)">
-                    <input type="text" id="fillHex" value="#ffffff" maxlength="7" onchange="applyFill(this.value)">
+                    <input type="color" id="fillColor" value="#000000" oninput="applyFill(this.value)">
+                    <input type="text" id="fillHex" value="#000000" maxlength="7" onchange="applyFill(this.value)">
                 </div>
             </div>
 
@@ -243,37 +248,53 @@
                 <input type="number" id="strokeWidth" value="0" min="0" max="20" step="0.5" oninput="applyStrokeWidth(this.value)">
             </div>
         </div>
-
-        <div style="font-size:11px; color:var(--text-secondary); line-height:1.8;">
-            ℹ️ مربع <b>الاسم</b> و<b>الرقم</b> يحددان أقصى عرض للكتابة؛ إذا كان الاسم أطول من المربع يصغّر النظام الخط تلقائياً ليبقى داخله.
-        </div>
     </aside>
 
     <main class="canvas-area">
         <div class="canvas-wrapper">
             <canvas id="jerseyCanvas" width="900" height="650"></canvas>
         </div>
-        <div class="canvas-hint">
-            💡 اسحب المربعات فوق الباترون إلى مكانها الصحيح، وغيّروا الحجم من الزوايا
+        <div class="canvas-hint" id="canvasHint">
+            💡 اسحبوا الاسم والرقم إلى مكانهما، وغيّروا الحجم من الزوايا
         </div>
     </main>
 </div>
 
 <script>
     const API = 'http://127.0.0.1:5000';
-    const PRINT_SIZE = 'M';
+    const SIZES = ['S', 'M', 'L', 'XL'];
     const themeAccent = '#baa58c';
     const FONT_FAMILIES = ['Cairo', 'Almarai', 'Tajawal', 'Changa', 'Readex Pro', 'Teko', 'Bebas Neue', 'Anton', 'Montserrat', 'Russo One', 'Barlow Condensed'];
     // هذه الخطوط لها وزن عادي فقط (لا نسمح للمتصفح بتغليظها صناعياً حتى يطابق ملف الطباعة)
     const REGULAR_ONLY = ['Bebas Neue', 'Anton', 'Russo One'];
     const weightOf = f => REGULAR_ONLY.includes(f) ? 'normal' : 'bold';
+    // حدود القطعة الخلفية (نسب من الصفحة) محسوبة من باترونات المصنع — تُستخدم إذا تعذّر التحليل من السيرفر
+    const BACK_BOX_FALLBACK = { S: [0, 0, 0.4908, 0.5162], M: [0, 0, 0.4912, 0.5146], L: [0.2704, 0, 0.6289, 1], XL: [0.2727, 0, 0.6304, 1] };
+
+    const params = new URLSearchParams(location.search);
+    const IS_PLAYER = params.has('player');
+    const PLAYER_IDX = IS_PLAYER ? parseInt(params.get('player'), 10) : -1;
+    const normSize = v => String(v || 'M').trim().toUpperCase();
+    let currentSize = normSize(params.get('size') || sessionStorage.getItem('sportway_cur_size') || 'M');
+    if (!SIZES.includes(currentSize)) currentSize = 'M';
+
+    let memDesigns = {};   // مقاس -> إعدادات التصميم
+    let uploaded = [];     // المقاسات التي رُفع لها باترون في هذه الجلسة
+    try { uploaded = JSON.parse(sessionStorage.getItem('sportway_uploaded') || '[]'); } catch (e) {}
+    const markUploaded = s => { if (!uploaded.includes(s)) uploaded.push(s); sessionStorage.setItem('sportway_uploaded', JSON.stringify(uploaded)); };
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
     const canvas = new fabric.Canvas('jerseyCanvas', { width: 900, height: 650, backgroundColor: '#ffffff', preserveObjectStacking: true });
     let patternInfo = null; // { wPt, hPt }
 
-    // ---------- أدوات إنشاء العناصر (الإحداثيات كلها نسب مئوية من الباترون) ----------
+    function flashHint(msg) {
+        const h = document.getElementById('canvasHint');
+        const old = h.innerText;
+        h.innerText = msg;
+        setTimeout(() => { h.innerText = old; }, 2500);
+    }
+
+    // ---------- العناصر (الإحداثيات كلها نسب مئوية من الباترون) ----------
     const baseCtl = { borderColor: themeAccent, cornerColor: themeAccent, cornerSize: 8, transparentCorners: false, lockRotation: true };
 
     // عنصر نص مخصص: المركز = مركز النص المرسوم فعلياً (يتفادى مشاكل محاذاة Textbox مع العربي)
@@ -317,7 +338,7 @@
             originX: 'center', originY: 'center',
             left: (o.cx / 100) * W, top: (o.cy / 100) * H,
             fontSize: o.rel * H, fontFamily: o.family, fontWeight: weightOf(o.family),
-            fill: o.fill || '#ffffff', stroke: o.stroke || '#000000',
+            fill: o.fill || '#000000', stroke: o.stroke || '#000000',
             strokeWidth: (o.strokeRel || 0) * H
         });
         t.setControlsVisibility({ mtr: false, mt: false, mb: false, ml: false, mr: false });
@@ -342,7 +363,7 @@
         });
     }
 
-    // ---------- تحميل الباترون: يضبط الكانفاس على نسبة الباترون الحقيقية ----------
+    // ---------- الباترون: الكانفاس يتبع نسبة الباترون الحقيقية ----------
     function fitCanvasToPattern(pw, ph) {
         const area = document.querySelector('.canvas-area');
         const maxW = Math.max(400, Math.min(1100, area.clientWidth - 40));
@@ -367,7 +388,7 @@
         const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
         const page = await pdf.getPage(1);
         const v1 = page.getViewport({ scale: 1 });
-        // للعرض فقط: نحدد الدقة بحيث لا يتجاوز أكبر بُعد ~2200px (الباترون الحقيقي يبقى كما هو في السيرفر)
+        // للعرض فقط: أكبر بُعد ~2200px (الباترون الحقيقي يبقى كما هو في السيرفر)
         const scale = Math.min(2200 / Math.max(v1.width, v1.height), 4);
         const vp = page.getViewport({ scale });
         const tmp = document.createElement('canvas');
@@ -383,17 +404,52 @@
             img.set({ left: 0, top: 0, scaleX: canvas.width / img.width, scaleY: canvas.height / img.height, selectable: false, evented: false });
             canvas.setBackgroundImage(img, () => { canvas.renderAll(); res(); });
         }));
+        const cm = v => (v / 72 * 2.54).toFixed(1);
+        document.getElementById('patternStatus').innerText = `✅ ${cm(v1.width)} × ${cm(v1.height)} سم`;
+    }
 
-        const cm = (v) => (v / 72 * 2.54).toFixed(1);
-        document.getElementById('patternStatus').innerText = `✅ الباترون: ${cm(v1.width)} × ${cm(v1.height)} سم`;
+    function clearCanvas() {
+        canvas.discardActiveObject();
+        canvas.getObjects().slice().forEach(o => canvas.remove(o));
+        canvas.setBackgroundImage(null, () => {});
+        patternInfo = null;
+        fitCanvasToPattern(900, 650);
+        canvas.renderAll();
+    }
+
+    // ---------- الموضع التلقائي للاسم والرقم (حسب القطعة الخلفية لكل مقاس) ----------
+    async function getBackBox() {
+        try {
+            const r = await fetch(`${API}/api/analyze-template/${currentSize}`);
+            const j = await r.json();
+            if (j.success && j.backBox) return j.backBox;
+        } catch (e) {}
+        return BACK_BOX_FALLBACK[currentSize] || [0, 0, 0.5, 0.5];
+    }
+
+    async function autoLayout(manual) {
+        if (!patternInfo) { if (manual) alert('ارفعوا باترون هذا المقاس أولاً.'); return; }
+        const [x0, y0, x1, y1] = await getBackBox();
+        const bw = x1 - x0, bh = y1 - y0, W = canvas.width, H = canvas.height;
+        const place = (o, cy, rel) => {
+            if (!o) return;
+            o.set({ left: (x0 + bw / 2) * W, top: cy * H, fontSize: rel * H, scaleX: 1, scaleY: 1, fill: '#000000', stroke: '#000000', strokeWidth: 0 });
+            o.updateDims(); o.setCoords();
+        };
+        const objs = canvas.getObjects();
+        place(objs.find(o => o.elementRole === 'name_placeholder'), y0 + 0.32 * bh, 0.065 * bh);
+        place(objs.find(o => o.elementRole === 'number_placeholder'), y0 + 0.60 * bh, 0.28 * bh);
+        canvas.renderAll();
+        syncControls();
+        if (manual) flashHint('تم ضبط الاسم والرقم تلقائياً على القطعة الخلفية');
     }
 
     async function loadPdfJersey(e) {
         const file = e.target.files[0];
+        e.target.value = '';
         if (!file) return;
-        const buf = await file.arrayBuffer();
         try {
-            await renderPatternPdf(buf);
+            await renderPatternPdf(await file.arrayBuffer());
         } catch (err) {
             alert('حدث خطأ أثناء قراءة ملف الـ PDF: ' + err.message);
             return;
@@ -401,14 +457,17 @@
         // رفع الملف الأصلي للسيرفر ليُستخدم في الطباعة بجودته الكاملة
         const fd = new FormData();
         fd.append('file', file);
-        fd.append('size', PRINT_SIZE);
+        fd.append('size', currentSize);
         try {
             const r = await fetch(`${API}/api/upload-template`, { method: 'POST', body: fd });
             const res = await r.json();
             if (!res.success) throw new Error(res.message);
-            document.getElementById('patternStatus').innerText = `✅ الباترون: ${res.widthCm} × ${res.heightCm} سم (محفوظ في السيرفر)`;
+            markUploaded(currentSize);
+            document.getElementById('patternStatus').innerText = `✅ ${res.widthCm} × ${res.heightCm} سم (محفوظ في السيرفر)`;
             if (res.pages > 1) alert('تنبيه: الملف فيه أكثر من صفحة، سيتم استخدام الصفحة الأولى فقط.');
             if (res.rotation) alert('تنبيه: الباترون مدوَّر (Rotation) وسيرفضه السيرفر. صدّروه بدون تدوير.');
+            await autoLayout(false);
+            buildTabs();
         } catch (err) {
             alert('⚠️ تعذّر رفع الباترون للسيرفر. تأكدوا من تشغيل: python print_server.py\n' + err.message);
         }
@@ -434,22 +493,31 @@
     }
 
     function addNewCustomText() {
-        const t = makeText('نص إضافي', { cx: 50, cy: 70, w: 22, rel: 0.03, family: 'Cairo', role: 'static_asset' });
+        const t = makeText('نص إضافي', { cx: 50, cy: 70, rel: 0.03, family: 'Cairo', fill: '#000000', role: 'static_asset' });
         canvas.setActiveObject(t);
         canvas.renderAll();
     }
 
+    // الحذف بالكيبورد (Delete أو Backspace) — لا يحذف الاسم والرقم
     function deleteSelected() {
         const o = canvas.getActiveObject();
-        if (!o) return;
+        if (!o) return false;
         if (o.elementRole === 'name_placeholder' || o.elementRole === 'number_placeholder') {
-            alert('مربعا الاسم والرقم أساسيان ولا يمكن حذفهما.');
-            return;
+            flashHint('الاسم والرقم أساسيان ولا يمكن حذفهما');
+            return true;
         }
         canvas.remove(o);
         canvas.discardActiveObject();
         canvas.renderAll();
+        return true;
     }
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+        const t = e.target;
+        if (t && ['INPUT', 'SELECT', 'TEXTAREA'].includes(t.tagName)) return;
+        if (IS_PLAYER) return;
+        if (deleteSelected()) e.preventDefault();
+    });
 
     // ---------- أدوات المظهر ----------
     function activeTextObj() {
@@ -459,7 +527,7 @@
     function applyFont(val) {
         const o = activeTextObj();
         if (!o) return;
-        document.fonts.load(`bold 40px "${val}"`).then(() => {
+        document.fonts.load(`${weightOf(val)} 40px "${val}"`).then(() => {
             o.set({ fontFamily: val, fontWeight: weightOf(val) });
             o.updateDims();
             canvas.requestRenderAll();
@@ -492,7 +560,7 @@
         row.style.display = '';
         let label = 'النص:';
         const isName = o.elementRole === 'name_placeholder', isNum = o.elementRole === 'number_placeholder';
-        if (typeof IS_PLAYER !== 'undefined' && IS_PLAYER) label = isName ? 'الاسم على هذا التيشيرت:' : (isNum ? 'الرقم على هذا التيشيرت:' : 'النص:');
+        if (IS_PLAYER) label = isName ? 'الاسم على هذا التيشيرت:' : (isNum ? 'الرقم على هذا التيشيرت:' : 'النص:');
         else if (isName) label = 'نص الاسم التجريبي — اكتبوا أطول اسم متوقع، فعرضه هو أقصى عرض مسموح:';
         else if (isNum) label = 'الرقم التجريبي:';
         document.getElementById('labelText').innerText = label;
@@ -504,6 +572,7 @@
     }
     canvas.on('selection:created', syncControls);
     canvas.on('selection:updated', syncControls);
+    canvas.on('selection:cleared', syncControls);
 
     // ---------- تحويل العناصر إلى نسب مئوية من الباترون ----------
     const geom = o => {
@@ -520,7 +589,7 @@
             ...g,
             fontFamily: o.fontFamily,
             relativeFontSize: (o.fontSize * (o.scaleY || 1)) / canvas.height,
-            fill: o.fill || '#ffffff', stroke: o.stroke || '#000000',
+            fill: o.fill || '#000000', stroke: o.stroke || '#000000',
             strokeRel: ((o.strokeWidth || 0) * (o.scaleY || 1)) / canvas.height
         };
     };
@@ -529,80 +598,134 @@
         return JSON.stringify(Object.fromEntries(Object.entries(c).map(([k, v]) => [k, typeof v === 'number' ? Math.round(v * 1000) / 1000 : v])));
     };
 
-    const params = new URLSearchParams(location.search);
-    const IS_PLAYER = params.has('player');
-    const PLAYER_IDX = IS_PLAYER ? parseInt(params.get('player'), 10) : -1;
-    const onConfirm = () => IS_PLAYER ? savePlayerEdit() : proceedToPreview();
-
-    // ================= وضع التصميم العام (كل الفريق) =================
-    async function initMaster() {
-        // أول دخول لطلبية جديدة = لوحة نظيفة. نسترجع التصميم فقط عند الرجوع من المعاينة في نفس الجلسة
-        const keep = sessionStorage.getItem('sportway_design_active') === '1';
-        let saved = {};
-        if (keep) {
-            try {
-                const r = await fetch(`${API}/api/template/${PRINT_SIZE}`);
-                if (r.ok) await renderPatternPdf(await r.arrayBuffer());
-            } catch (e) { console.warn('السيرفر غير متصل'); }
-            try { saved = JSON.parse(localStorage.getItem('sportway_master_template') || '{}'); } catch (e) {}
-        } else {
-            localStorage.removeItem('sportway_master_template');
-        }
-        const n = saved.nameConfig || {}, m = saved.numberConfig || {};
-
-        const nameBox = makeText(n.sampleText || 'الاسم التجريبي', {
-            cx: n.centerXPercent ?? 50, cy: n.centerYPercent ?? 30,
-            rel: n.relativeFontSize ?? 0.04, family: n.fontFamily || 'Cairo', fill: n.fill, stroke: n.stroke,
-            strokeRel: n.strokeRel || 0, role: 'name_placeholder'
-        });
-        makeText(m.sampleText || '10', {
-            cx: m.centerXPercent ?? 50, cy: m.centerYPercent ?? 45,
-            rel: m.relativeFontSize ?? 0.12, family: m.fontFamily || 'Teko', fill: m.fill, stroke: m.stroke,
-            strokeRel: m.strokeRel || 0, role: 'number_placeholder'
-        });
-        for (const el of (saved.staticElements || [])) await addStaticFromConfig(el, false);
-        canvas.setActiveObject(nameBox);
-        syncControls();
-        canvas.renderAll();
-    }
-
-    async function addStaticFromConfig(el, locked) {
-        let o = null;
-        if (el.type === 'text') {
-            o = makeText(el.text || '', { cx: el.centerXPercent, cy: el.centerYPercent, w: el.widthPercent,
-                rel: el.relativeFontSize, family: el.fontFamily || 'Cairo', fill: el.fill, stroke: el.stroke,
-                strokeRel: el.strokeRel || 0, role: 'static_asset' });
-        } else if (el.type === 'image' && el.assetId) {
-            o = await makeImage(`${API}/api/asset/${el.assetId}`, el.assetId, { cx: el.centerXPercent, cy: el.centerYPercent, w: el.widthPercent });
-        }
-        if (o && locked) { o.set({ selectable: false, evented: false }); o.elementRole = 'context'; }
-    }
-
-    function newDesign() {
-        if (!confirm('بدء تصميم جديد؟ سيتم مسح التصميم الحالي (المكان والخطوط والشعارات).')) return;
-        localStorage.removeItem('sportway_master_template');
-        sessionStorage.removeItem('sportway_design_active');
-        location.href = 'editor.html';
-    }
-
-    function proceedToPreview() {
-        if (!patternInfo) { alert('ارفعوا ملف الباترون (PDF) أولاً.'); return; }
+    function collectConfig() {
+        if (!patternInfo) return null;
         let nameConfig = null, numberConfig = null;
         const staticElements = [];
         for (const o of canvas.getObjects()) {
             if (o.elementRole === 'name_placeholder') nameConfig = { ...textCfg(o), sampleText: o.text };
             else if (o.elementRole === 'number_placeholder') numberConfig = { ...textCfg(o), sampleText: o.text };
             else if (o.isType('image')) {
-                if (!o.assetId) { alert('أحد الشعارات لم يُرفع للسيرفر، احذفوه وأعيدوا رفعه.'); return; }
+                if (!o.assetId) continue;
                 staticElements.push({ ...geom(o), type: 'image', assetId: o.assetId });
             } else if (o.isType('ctext')) {
                 staticElements.push({ ...textCfg(o), type: 'text', text: o.text || '' });
             }
         }
-        localStorage.setItem('sportway_master_template', JSON.stringify({
-            version: 2, size: PRINT_SIZE, pattern: patternInfo, nameConfig, numberConfig, staticElements
-        }));
-        localStorage.removeItem('sportway_current_design_bg');
+        return { version: 3, size: currentSize, pattern: patternInfo, nameConfig, numberConfig, staticElements };
+    }
+
+    async function addStaticFromConfig(el, locked) {
+        let o = null;
+        if (el.type === 'text') {
+            o = makeText(el.text || '', { cx: el.centerXPercent, cy: el.centerYPercent, rel: el.relativeFontSize,
+                family: el.fontFamily || 'Cairo', fill: el.fill, stroke: el.stroke, strokeRel: el.strokeRel || 0, role: 'static_asset' });
+        } else if (el.type === 'image' && el.assetId) {
+            o = await makeImage(`${API}/api/asset/${el.assetId}`, el.assetId, { cx: el.centerXPercent, cy: el.centerYPercent, w: el.widthPercent });
+        }
+        if (o && locked) { o.set({ selectable: false, evented: false }); o.elementRole = 'context'; }
+    }
+
+    // ================= وضع التصميم العام (تبويب لكل مقاس) =================
+    function rosterCounts() {
+        try {
+            const c = {};
+            JSON.parse(localStorage.getItem('sportway_roster') || '[]').forEach(p => { const s = normSize(p.jerseySize || p.size); c[s] = (c[s] || 0) + 1; });
+            return c;
+        } catch (e) { return {}; }
+    }
+
+    function buildTabs() {
+        const box = document.getElementById('sizeTabs');
+        box.innerHTML = '';
+        const counts = rosterCounts();
+        SIZES.forEach(s => {
+            const b = document.createElement('button');
+            b.className = 'size-tab' + (s === currentSize ? ' active' : '');
+            const done = memDesigns[s] || uploaded.includes(s);
+            b.textContent = `${s}${counts[s] ? ` (${counts[s]})` : ''}${done ? ' ✓' : ''}`;
+            b.title = counts[s] ? `${counts[s]} لاعب بهذا المقاس` : 'لا يوجد لاعبون بهذا المقاس';
+            b.onclick = () => switchSize(s);
+            box.appendChild(b);
+        });
+    }
+
+    async function buildObjects(d) {
+        const n = d?.nameConfig || {}, m = d?.numberConfig || {};
+        makeText(n.sampleText || 'الاسم التجريبي', {
+            cx: n.centerXPercent ?? 50, cy: n.centerYPercent ?? 30, rel: n.relativeFontSize ?? 0.04,
+            family: n.fontFamily || 'Cairo', fill: n.fill || '#000000', stroke: n.stroke, strokeRel: n.strokeRel || 0, role: 'name_placeholder'
+        });
+        makeText(m.sampleText || '10', {
+            cx: m.centerXPercent ?? 50, cy: m.centerYPercent ?? 45, rel: m.relativeFontSize ?? 0.12,
+            family: m.fontFamily || 'Teko', fill: m.fill || '#000000', stroke: m.stroke, strokeRel: m.strokeRel || 0, role: 'number_placeholder'
+        });
+        for (const el of (d?.staticElements || [])) await addStaticFromConfig(el, false);
+    }
+
+    async function loadSize(size) {
+        currentSize = size;
+        sessionStorage.setItem('sportway_cur_size', size);
+        clearCanvas();
+        document.getElementById('patternLabel').innerText = `1. باترون مقاس ${size}`;
+        document.getElementById('patternStatus').innerText = `لم يتم رفع باترون لمقاس ${size} بعد`;
+        if (uploaded.includes(size)) {
+            try {
+                const r = await fetch(`${API}/api/template/${size}`);
+                if (r.ok) await renderPatternPdf(await r.arrayBuffer());
+            } catch (e) { console.warn('السيرفر غير متصل'); }
+        }
+        await buildObjects(memDesigns[size]);
+        if (!memDesigns[size] && patternInfo) await autoLayout(false);
+        const nb = canvas.getObjects().find(o => o.elementRole === 'name_placeholder');
+        if (nb) canvas.setActiveObject(nb);
+        syncControls();
+        buildTabs();
+        canvas.renderAll();
+    }
+
+    async function switchSize(size) {
+        if (size === currentSize) return;
+        const c = collectConfig();
+        if (c) memDesigns[currentSize] = c; else delete memDesigns[currentSize];
+        await loadSize(size);
+    }
+
+    async function initMaster() {
+        // أول دخول لطلبية جديدة = لوحة نظيفة. نسترجع التصاميم فقط عند الرجوع من المعاينة في نفس الجلسة
+        const keep = sessionStorage.getItem('sportway_design_active') === '1';
+        if (keep) {
+            try { memDesigns = JSON.parse(localStorage.getItem('sportway_designs') || '{}'); } catch (e) {}
+        } else {
+            localStorage.removeItem('sportway_designs');
+            localStorage.removeItem('sportway_master_template');
+            uploaded = [];
+            sessionStorage.setItem('sportway_uploaded', '[]');
+        }
+        buildTabs();
+        await loadSize(currentSize);
+    }
+
+    function newDesign() {
+        if (!confirm('بدء تصميم جديد؟ سيتم مسح كل التصاميم الحالية (كل المقاسات).')) return;
+        localStorage.removeItem('sportway_designs');
+        localStorage.removeItem('sportway_master_template');
+        sessionStorage.removeItem('sportway_design_active');
+        sessionStorage.setItem('sportway_uploaded', '[]');
+        location.href = 'editor.html';
+    }
+
+    function proceedToPreview() {
+        const c = collectConfig();
+        if (c) memDesigns[currentSize] = c;
+        if (!Object.keys(memDesigns).length) { alert('ارفعوا باترون واحد على الأقل.'); return; }
+
+        const counts = rosterCounts();
+        const missing = Object.keys(counts).filter(s => !memDesigns[s]);
+        if (missing.length && !confirm(`لا يوجد تصميم للمقاسات: ${missing.map(s => `${s} (${counts[s]} لاعب)`).join('، ')}\nلن تظهر هذه المقاسات في المعاينة. هل تريدون المتابعة؟`)) return;
+
+        localStorage.setItem('sportway_designs', JSON.stringify(memDesigns));
+        localStorage.removeItem('sportway_master_template');
         sessionStorage.setItem('sportway_design_active', '1');
         window.location.href = 'preview.html';
     }
@@ -627,16 +750,19 @@
 
     async function initPlayer() {
         const roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
-        const master = JSON.parse(localStorage.getItem('sportway_master_template') || '{}');
         const p = roster[PLAYER_IDX];
-        if (!p || !master.nameConfig || !master.numberConfig) {
-            alert('لا توجد بيانات كافية. ارجعوا للمعاينة.');
+        let designs = {};
+        try { designs = JSON.parse(localStorage.getItem('sportway_designs') || '{}'); } catch (e) {}
+        currentSize = normSize(p?.jerseySize || p?.size);
+        const master = designs[currentSize];
+        if (!p || !master?.nameConfig || !master?.numberConfig) {
+            alert('لا توجد بيانات كافية لهذا المقاس. ارجعوا للمعاينة.');
             location.href = 'preview.html';
             return;
         }
-        // تهيئة الواجهة لهذا الوضع
         document.getElementById('titleText').innerText = 'تعديل تيشيرت فردي';
-        document.getElementById('sizeTag').innerText = `— ${p.name} (#${p.number})`;
+        document.getElementById('sizeTabs').innerText = `— ${p.name} (#${p.number}) | مقاس ${currentSize}`;
+        document.getElementById('sizeTabs').style.color = '#baa58c';
         document.getElementById('secPattern').style.display = 'none';
         document.getElementById('secElements').style.display = 'none';
         document.getElementById('newDesignBtn').style.display = 'none';
@@ -648,7 +774,7 @@
         info.style.display = '';
         info.innerHTML = `✏️ تعديل <b>خاص بهذا التيشيرت فقط</b>.<br>حرّكوا الاسم والرقم، غيّروا حجمهم من الزوايا، وعدّلوا النص أو الخط واللون من القائمة الجانبية. باقي اللاعبين لا يتأثرون.`;
 
-        const r = await fetch(`${API}/api/template/${PRINT_SIZE}`).catch(() => null);
+        const r = await fetch(`${API}/api/template/${currentSize}`).catch(() => null);
         if (!r || !r.ok) { alert('تعذّر تحميل الباترون من السيرفر. شغّلوا print_server.py'); location.href = 'preview.html'; return; }
         await renderPatternPdf(await r.arrayBuffer());
 
@@ -674,10 +800,8 @@
         const nm = (nameObj.text || '').trim(), nb = (numObj.text || '').trim();
         if (nm !== String(p.name ?? '')) e.name = nm; else delete e.name;
         if (nb !== String(p.number ?? '')) e.number = nb; else delete e.number;
-
-        const withPad = o => textCfg(o);
-        if (cfgSnap(nameObj) !== initialSnap.name) e.nameCfg = withPad(nameObj);
-        if (cfgSnap(numObj) !== initialSnap.num) e.numCfg = withPad(numObj);
+        if (cfgSnap(nameObj) !== initialSnap.name) e.nameCfg = textCfg(nameObj);
+        if (cfgSnap(numObj) !== initialSnap.num) e.numCfg = textCfg(numObj);
         delete e.nameScale; delete e.numScale;
 
         if (Object.keys(e).length) p.edit = e; else delete p.edit;
@@ -695,6 +819,8 @@
         }
         location.reload();
     }
+
+    const onConfirm = () => IS_PLAYER ? savePlayerEdit() : proceedToPreview();
 
     async function init() {
         await Promise.all(FONT_FAMILIES.map(f => document.fonts.load(`${weightOf(f)} 40px "${f}"`).catch(() => {})));

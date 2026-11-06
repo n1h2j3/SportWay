@@ -178,7 +178,7 @@
     </div>
     <div class="header-actions">
         <a href="editor.html" class="btn">✏️ العودة للمحرر</a>
-        <button class="btn btn-success" id="exportBtn" onclick="triggerBatchExport()">🖨️ إصدار ملف الطباعة (PDF)</button>
+        <button class="btn btn-success" id="exportBtn" onclick="exportAll()">🖨️ إصدار ملفات كل المقاسات</button>
     </div>
 </header>
 
@@ -186,13 +186,13 @@
     <div id="serverBanner" class="banner err"></div>
     <div id="warnBanner" class="banner warn"></div>
 
-    <div class="summary-bar">
+    <div class="summary-bar" style="flex-wrap:wrap; gap:12px;">
         <div>
-            <span>تيشيرتات مقاس M الجاهزة للطباعة: </span>
-            <strong id="totalCount" style="color: var(--accent-gold); font-size: 15px;">0</strong>
-            <span style="color:var(--text-secondary); font-size:12px;"> &nbsp;|&nbsp; إجمالي الفريق: <span id="allCount">0</span></span>
+            <span>إجمالي الفريق: </span>
+            <strong id="allCount" style="color: var(--accent-gold); font-size: 15px;">0</strong>
+            <span style="color:var(--text-secondary); font-size:12px;"> &nbsp;|&nbsp; جاهز للطباعة: <span id="totalCount">0</span></span>
         </div>
-        <div style="font-size: 12px; color: var(--text-secondary);" id="patternNote"></div>
+        <div id="exportBar" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
     </div>
 
     <div id="cardsContainer" class="roster-grid"></div>
@@ -200,14 +200,12 @@
 
 <script>
     const API = 'http://127.0.0.1:5000';
-    const PRINT_SIZE = 'M';
+    const SIZES = ['S', 'M', 'L', 'XL'];
+    let designs = {};
+    try { designs = JSON.parse(localStorage.getItem('sportway_designs') || '{}'); } catch (e) {}
+    const designOf = sz => designs[sz];
 
     let roster = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
-    const masterConfig = JSON.parse(localStorage.getItem('sportway_master_template') || '{}');
-    const nameCfg = masterConfig.nameConfig;
-    const numCfg = masterConfig.numberConfig;
-    const staticElements = masterConfig.staticElements || [];
-    const pattern = masterConfig.pattern || { wPt: 3, hPt: 4 };
     const cards = []; // مراجع العناصر لكل لاعب M
 
     const REGULAR_ONLY = ['Bebas Neue', 'Anton', 'Russo One'];
@@ -224,6 +222,8 @@
     // ---- القيم الفعلية للاعب (الأصلية + التعديل الفردي) ----
     function effective(p) {
         const e = p.edit || {};
+        const d = designOf(sizeOf(p));
+        const nameCfg = d.nameConfig, numCfg = d.numberConfig;
         return {
             name: e.name ?? p.name, number: e.number ?? p.number,
             nameScale: (e.nameScale ?? 100) / 100, numScale: (e.numScale ?? 100) / 100,
@@ -286,19 +286,21 @@
         card.className = 'card';
         const sz = sizeOf(player);
 
-        if (sz !== PRINT_SIZE) {
+        const design = designOf(sz);
+        if (!design) {
             card.innerHTML = `
                 <div class="card-preview-area" style="height:200px; flex-direction:column; color:#778899;">
                     <span style="font-size:30px;">⏳</span>
                     <div style="margin-top:10px; font-weight:bold; color:#e6ebed;">${esc(player.name)} (#${esc(player.number)})</div>
-                    <div style="font-size:11px; margin-top:4px;">قيد التجهيز لاحقاً | مقاس (${esc(sz)})</div>
+                    <div style="font-size:11px; margin-top:4px;">لا يوجد تصميم لمقاس (${esc(sz)}) — ارجعوا للمحرر وارفعوا باترون هذا المقاس</div>
                 </div>
                 <div class="card-details"><div class="player-info-title">${esc(player.name)} (#${esc(player.number)})</div>
                 <span class="badge-size" style="background:#334455; color:#fff;">${esc(sz)}</span></div>`;
             return { card };
         }
 
-        const staticHtml = staticElements.map(el => {
+        const pattern = design.pattern || { wPt: 3, hPt: 4 };
+        const staticHtml = (design.staticElements || []).map(el => {
             if (el.type === 'image') {
                 return `<img src="${API}/api/asset/${esc(el.assetId)}" style="position:absolute; left:${el.centerXPercent}%; top:${el.centerYPercent}%; width:${el.widthPercent}%; transform:translate(-50%,-50%); pointer-events:none;">`;
             }
@@ -308,14 +310,14 @@
         card.innerHTML = `
             <div class="stage" style="aspect-ratio:${pattern.wPt} / ${pattern.hPt};" title="اضغط لتعديل هذا التيشيرت">
                 <span class="edit-hint">✏️ اضغط لتعديل هذا التيشيرت</span>
-                <img class="bg" src="${API}/api/template-preview/${PRINT_SIZE}?w=900&t=${Date.now()}" onerror="window.__bgFail && window.__bgFail()">
+                <img class="bg" src="${API}/api/template-preview/${sz}?w=900&t=${Date.now()}" onerror="window.__bgFail && window.__bgFail()">
                 ${staticHtml}
                 <div class="ov" data-role="name"></div>
                 <div class="ov" data-role="num"></div>
             </div>
             <div class="card-details">
                 <div class="player-info-title"></div>
-                <span class="badge-size">${PRINT_SIZE}</span>
+                <span class="badge-size">${esc(sz)}</span>
             </div>
             <div class="edit-panel">
                 <label>الاسم على التيشيرت<input type="text" data-f="name" value="${esc(player.name)}"></label>
@@ -345,11 +347,11 @@
         const container = document.getElementById('cardsContainer');
         container.innerHTML = '';
         cards.length = 0;
-        const mCount = roster.filter(p => sizeOf(p) === PRINT_SIZE).length;
-        document.getElementById('totalCount').innerText = mCount;
+        document.getElementById('totalCount').innerText = roster.filter(p => designOf(sizeOf(p))).length;
         document.getElementById('allCount').innerText = roster.length;
+        buildExportBar();
 
-        if (roster.length === 0 || !nameCfg || !numCfg) {
+        if (roster.length === 0 || !Object.keys(designs).length) {
             container.innerHTML = `
                 <div class="empty-state-box">
                     <h3>⚠️ ${roster.length === 0 ? 'لا يوجد لاعبون مسجلون' : 'لم يتم اعتماد تصميم من المحرر'}</h3>
@@ -379,49 +381,77 @@
         window.__bgFail = null;
     };
 
-    // ---- إصدار ملف الطباعة ----
-    async function triggerBatchExport() {
-        const mPlayers = roster.filter(p => sizeOf(p) === PRINT_SIZE);
-        if (mPlayers.length === 0) { alert('لا يوجد لاعبين بمقاس M لإصدار ملف الطباعة.'); return; }
-        const btn = document.getElementById('exportBtn');
-        const original = btn.innerHTML;
-        btn.innerHTML = '⏳ جاري توليد ملف الطباعة...';
-        btn.disabled = true;
-        showBanner('warnBanner', '');
+    // ---- إصدار ملفات الطباعة (ملف مستقل لكل مقاس) ----
+    function buildExportBar() {
+        const bar = document.getElementById('exportBar');
+        bar.innerHTML = '';
+        SIZES.forEach(sz => {
+            const n = roster.filter(p => sizeOf(p) === sz).length;
+            if (!n) return;
+            const b = document.createElement('button');
+            b.className = 'btn' + (designOf(sz) ? ' btn-success' : '');
+            b.disabled = !designOf(sz);
+            b.textContent = designOf(sz) ? `🖨️ ${sz} (${n})` : `${sz} (${n}) — بدون تصميم`;
+            b.onclick = () => exportSize(sz);
+            bar.appendChild(b);
+        });
+    }
+
+    async function exportSize(size) {
+        const players = roster.filter(p => sizeOf(p) === size);
+        const design = designOf(size);
+        if (!design) { alert(`لا يوجد تصميم لمقاس ${size}.`); return false; }
+        if (!players.length) return false;
         try {
             const response = await fetch(`${API}/api/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    size: PRINT_SIZE, roster, masterConfig,
+                    size, roster, masterConfig: design,
                     orderTitle: localStorage.getItem('sportway_order_title') || 'SportWay'
                 })
             });
             if (!response.ok) {
                 const err = await response.json().catch(() => ({}));
-                alert('حدث خطأ أثناء التجهيز: ' + (err.message || response.status));
-                return;
+                alert(`مقاس ${size}: حدث خطأ أثناء التجهيز — ` + (err.message || response.status));
+                return false;
             }
             let warnings = [];
             try { warnings = JSON.parse(decodeURIComponent(response.headers.get('X-Print-Warnings') || '[]')); } catch (e) {}
             const blob = await response.blob();
             const cd = response.headers.get('Content-Disposition') || '';
             const m = cd.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
-            const filename = m ? decodeURIComponent(m[1]) : `SportWay_${PRINT_SIZE}.pdf`;
+            const filename = m ? decodeURIComponent(m[1]) : `SportWay_${size}.pdf`;
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob); a.download = filename;
             document.body.appendChild(a); a.click(); a.remove();
-            if (warnings.length) showBanner('warnBanner', '<b>تنبيهات على ملف الطباعة:</b><br>• ' + warnings.map(esc).join('<br>• '));
+            if (warnings.length) {
+                const box = document.getElementById('warnBanner');
+                box.innerHTML = (box.innerHTML ? box.innerHTML + '<br>' : '<b>تنبيهات على ملفات الطباعة:</b><br>') + `<b>[${size}]</b><br>• ` + warnings.map(esc).join('<br>• ');
+                box.style.display = 'block';
+            }
+            return true;
         } catch (err) {
             alert('تأكدوا من تشغيل السيرفر: python print_server.py');
-        } finally {
-            btn.innerHTML = original;
-            btn.disabled = false;
+            return false;
         }
     }
 
-    document.getElementById('patternNote').innerText =
-        masterConfig.pattern ? `أبعاد الباترون: ${(pattern.wPt / 72 * 2.54).toFixed(1)} × ${(pattern.hPt / 72 * 2.54).toFixed(1)} سم` : '';
+    async function exportAll() {
+        const btn = document.getElementById('exportBtn');
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        showBanner('warnBanner', '');
+        for (const sz of SIZES) {
+            if (!roster.some(p => sizeOf(p) === sz) || !designOf(sz)) continue;
+            btn.innerHTML = `⏳ جاري توليد مقاس ${sz}...`;
+            await exportSize(sz);
+            await new Promise(r => setTimeout(r, 600)); // مهلة قصيرة حتى لا يمنع المتصفح التحميلات المتتالية
+        }
+        btn.innerHTML = original;
+        btn.disabled = false;
+    }
+
     renderCards();
 </script>
 

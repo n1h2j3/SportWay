@@ -407,8 +407,8 @@
                 <tbody id="rosterBody">
                 <tr>
                     <td style="text-align: center; color: var(--text-tertiary);">1</td>
-                    <td><input type="text" class="input-name" placeholder="اسم اللاعب"></td>
-                    <td><input type="text" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
+                    <td><input type="text" class="input-name" placeholder="اسم اللاعب" autocomplete="off" spellcheck="false"></td>
+                    <td><input type="text" class="input-num" placeholder="الرقم" autocomplete="off" style="text-align: center;"></td>
                     <td>
                         <select class="select-jsize">
                             <option value="S">S</option>
@@ -432,7 +432,7 @@
         </div>
 
         <div class="table-footer">
-            <input type="text" id="orderTitle" placeholder="اسم الطلبية / الفريق (لحفظها بالأرشيف)" style="background-color: var(--bg-base); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 8px 12px; border-radius: 5px; font-size: 12px; width: 280px; outline: none;">
+            <input type="text" id="orderTitle" autocomplete="off" placeholder="اسم الطلبية / الفريق (لحفظها بالأرشيف)" style="background-color: var(--bg-base); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 8px 12px; border-radius: 5px; font-size: 12px; width: 280px; outline: none;">
             <button class="btn btn-primary" style="padding: 10px 22px;" onclick="proceedToEditor()">
                 تأكيد البيانات والانتقال للمحرر ➔
             </button>
@@ -463,8 +463,8 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
                 <td style="text-align: center; color: var(--text-tertiary);">${rowCount}</td>
-                <td><input type="text" value="${esc(name)}" class="input-name" placeholder="اسم اللاعب"></td>
-                <td><input type="text" value="${esc(num)}" class="input-num" placeholder="الرقم" style="text-align: center;"></td>
+                <td><input type="text" value="${esc(name)}" class="input-name" placeholder="اسم اللاعب" autocomplete="off" spellcheck="false"></td>
+                <td><input type="text" value="${esc(num)}" class="input-num" placeholder="الرقم" autocomplete="off" style="text-align: center;"></td>
                 <td>
                     <select class="select-jsize">
                         <option value="S" ${jSize === 'S' ? 'selected' : ''}>S</option>
@@ -605,16 +605,29 @@
         }
 
         const titleInput = document.getElementById('orderTitle').value.trim();
+        const sig = r => JSON.stringify(r.map(p => [p.name, p.number, p.jerseySize, p.shortSize]));
         if (titleInput) {
             let savedOrders = JSON.parse(localStorage.getItem('sportway_orders_archive') || '[]');
-            savedOrders = savedOrders.filter(o => o.title !== titleInput); // نفس الاسم يستبدل القديم بدل التكرار
-            savedOrders.unshift({
-                title: titleInput,
-                roster: roster,
-                date: new Date().toLocaleDateString('ar-SA')
-            });
-            localStorage.setItem('sportway_orders_archive', JSON.stringify(savedOrders.slice(0, 10)));
+            const same = savedOrders.find(o => o.title === titleInput);
+            // لا نحفظ إذا نفس الاسم ونفس الجدول بدون أي تغيير (حتى لا تمتلئ القائمة بكل تجربة)
+            if (!same || sig(same.roster) !== sig(roster)) {
+                savedOrders = savedOrders.filter(o => o.title !== titleInput);
+                savedOrders.unshift({
+                    title: titleInput,
+                    roster: roster.map(({ name, number, jerseySize, shortSize }) => ({ name, number, jerseySize, shortSize })),
+                    date: new Date().toLocaleDateString('ar-SA')
+                });
+                localStorage.setItem('sportway_orders_archive', JSON.stringify(savedOrders.slice(0, 10)));
+            }
         }
+
+        // نحافظ على التعديلات الفردية (edit) للاعبين الذين لم يتغيروا
+        try {
+            const old = JSON.parse(localStorage.getItem('sportway_roster') || '[]');
+            const key = p => [p.name, p.number, p.jerseySize].join('|');
+            const edits = new Map(old.filter(p => p.edit).map(p => [key(p), p.edit]));
+            roster.forEach(p => { if (edits.has(key(p))) p.edit = edits.get(key(p)); });
+        } catch (e) {}
 
         localStorage.setItem('sportway_order_title', titleInput);
         localStorage.setItem('sportway_roster', JSON.stringify(roster));
