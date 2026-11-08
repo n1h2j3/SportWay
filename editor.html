@@ -195,7 +195,6 @@
                 🖼️ رفع شعار النادي / الرعاة (PNG / JPG)
                 <input type="file" id="logoUploadInput" accept="image/png,image/jpeg" style="display: none;" onchange="loadLogoImage(event)">
             </label>
-            <div style="font-size:11px; color:var(--text-secondary);">🗑️ للحذف: حدّدوا العنصر واضغطوا <b>Delete</b> في الكيبورد</div>
         </div>
 
         <div class="sidebar-section">
@@ -255,7 +254,7 @@
             <canvas id="jerseyCanvas" width="900" height="650"></canvas>
         </div>
         <div class="canvas-hint" id="canvasHint">
-            💡 اسحبوا الاسم والرقم إلى مكانهما، وغيّروا الحجم من الزوايا
+            💡 اسحب الاسم والرقم إلى مكانهما، وغيّر الحجم من الزوايا
         </div>
     </main>
 </div>
@@ -428,7 +427,7 @@
     }
 
     async function autoLayout(manual) {
-        if (!patternInfo) { if (manual) alert('ارفعوا باترون هذا المقاس أولاً.'); return; }
+        if (!patternInfo) { if (manual) alert('ارفع باترون هذا المقاس أولاً.'); return; }
         const [x0, y0, x1, y1] = await getBackBox();
         const bw = x1 - x0, bh = y1 - y0, W = canvas.width, H = canvas.height;
         const place = (o, cy, rel) => {
@@ -465,11 +464,11 @@
             markUploaded(currentSize);
             document.getElementById('patternStatus').innerText = `✅ ${res.widthCm} × ${res.heightCm} سم (محفوظ في السيرفر)`;
             if (res.pages > 1) alert('تنبيه: الملف فيه أكثر من صفحة، سيتم استخدام الصفحة الأولى فقط.');
-            if (res.rotation) alert('تنبيه: الباترون مدوَّر (Rotation) وسيرفضه السيرفر. صدّروه بدون تدوير.');
+            if (res.rotation) alert('تنبيه: الباترون مدوَّر (Rotation) وسيرفضه السيرفر. صدّره بدون تدوير.');
             await autoLayout(false);
             buildTabs();
         } catch (err) {
-            alert('⚠️ تعذّر رفع الباترون للسيرفر. تأكدوا من تشغيل: python print_server.py\n' + err.message);
+            alert('⚠️ تعذّر رفع الباترون للسيرفر. تأكد من تشغيل: python print_server.py\n' + err.message);
         }
     }
 
@@ -488,7 +487,7 @@
             canvas.setActiveObject(img);
             canvas.renderAll();
         } catch (err) {
-            alert('تعذّر رفع الشعار. تأكدوا من تشغيل السيرفر.\n' + err.message);
+            alert('تعذّر رفع الشعار. تأكد من تشغيل السيرفر.\n' + err.message);
         }
     }
 
@@ -561,7 +560,7 @@
         let label = 'النص:';
         const isName = o.elementRole === 'name_placeholder', isNum = o.elementRole === 'number_placeholder';
         if (IS_PLAYER) label = isName ? 'الاسم على هذا التيشيرت:' : (isNum ? 'الرقم على هذا التيشيرت:' : 'النص:');
-        else if (isName) label = 'نص الاسم التجريبي — اكتبوا أطول اسم متوقع، فعرضه هو أقصى عرض مسموح:';
+        else if (isName) label = 'نص الاسم التجريبي — اكتب أطول اسم متوقع، فعرضه هو أقصى عرض مسموح:';
         else if (isNum) label = 'الرقم التجريبي:';
         document.getElementById('labelText').innerText = label;
         document.getElementById('textInput').value = o.text;
@@ -718,11 +717,11 @@
     function proceedToPreview() {
         const c = collectConfig();
         if (c) memDesigns[currentSize] = c;
-        if (!Object.keys(memDesigns).length) { alert('ارفعوا باترون واحد على الأقل.'); return; }
+        if (!Object.keys(memDesigns).length) { alert('ارفع باترون واحد على الأقل.'); return; }
 
         const counts = rosterCounts();
         const missing = Object.keys(counts).filter(s => !memDesigns[s]);
-        if (missing.length && !confirm(`لا يوجد تصميم للمقاسات: ${missing.map(s => `${s} (${counts[s]} لاعب)`).join('، ')}\nلن تظهر هذه المقاسات في المعاينة. هل تريدون المتابعة؟`)) return;
+        if (missing.length && !confirm(`لا يوجد تصميم للمقاسات: ${missing.map(s => `${s} (${counts[s]} لاعب)`).join('، ')}\nلن تظهر هذه المقاسات في المعاينة. هل تريد المتابعة؟`)) return;
 
         localStorage.setItem('sportway_designs', JSON.stringify(memDesigns));
         localStorage.removeItem('sportway_master_template');
@@ -756,7 +755,7 @@
         currentSize = normSize(p?.jerseySize || p?.size);
         const master = designs[currentSize];
         if (!p || !master?.nameConfig || !master?.numberConfig) {
-            alert('لا توجد بيانات كافية لهذا المقاس. ارجعوا للمعاينة.');
+            alert('لا توجد بيانات كافية لهذا المقاس. ارجع للمعاينة.');
             location.href = 'preview.html';
             return;
         }
@@ -772,10 +771,10 @@
         document.getElementById('confirmBtn').innerText = '💾 حفظ والعودة للمعاينة';
         const info = document.getElementById('playerInfo');
         info.style.display = '';
-        info.innerHTML = `✏️ تعديل <b>خاص بهذا التيشيرت فقط</b>.<br>حرّكوا الاسم والرقم، غيّروا حجمهم من الزوايا، وعدّلوا النص أو الخط واللون من القائمة الجانبية. باقي اللاعبين لا يتأثرون.`;
+        info.innerHTML = `✏️ تعديل <b>خاص بهذا التيشيرت فقط</b>.<br>حرّك الاسم والرقم، غيّر حجمهما من الزوايا، وعدّل النص أو الخط واللون من القائمة الجانبية. باقي اللاعبين لا يتأثرون.`;
 
         const r = await fetch(`${API}/api/template/${currentSize}`).catch(() => null);
-        if (!r || !r.ok) { alert('تعذّر تحميل الباترون من السيرفر. شغّلوا print_server.py'); location.href = 'preview.html'; return; }
+        if (!r || !r.ok) { alert('تعذّر تحميل الباترون من السيرفر. شغّل print_server.py'); location.href = 'preview.html'; return; }
         await renderPatternPdf(await r.arrayBuffer());
 
         for (const el of (master.staticElements || [])) await addStaticFromConfig(el, true);

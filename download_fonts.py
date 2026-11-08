@@ -62,6 +62,6 @@ for key, (gname, weight, fname, _) in FONT_SPECS.items():
 
 print("\nالنتيجة: %d خط جاهز" % ok)
 if failed:
-    print("الخطوط التي فشلت (حمّلوها يدوياً من fonts.google.com وضعوها في مجلد fonts):")
+    print("الخطوط التي فشلت (حمّلها يدوياً من fonts.google.com وضعها في مجلد fonts):")
     for f in failed:
         print("  -", f)

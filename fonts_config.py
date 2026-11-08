@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""قائمة الخطوط المعتمدة (يستخدمها السيرفر وسكربت التحميل). لإضافة خط جديد أضيفوه هنا + في editor.html"""
+"""قائمة الخطوط المعتمدة (يستخدمها السيرفر وسكربت التحميل). لإضافة خط جديد أضفه هنا + في editor.html"""
 import os
 
 FONTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")

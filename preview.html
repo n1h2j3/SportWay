@@ -173,7 +173,7 @@
     <div class="brand-unit">
         <div class="brand-text">
             <h1>مراجعة وتدقيق التصاميم — مقاس M</h1>
-            <p>يمكنكم تعديل أي لاعب بشكل فردي من تحت بطاقته، دون التأثير على بقية الفريق</p>
+            <p>يمكنك تعديل أي لاعب بشكل فردي من تحت بطاقته، دون التأثير على بقية الفريق</p>
         </div>
     </div>
     <div class="header-actions">
@@ -292,7 +292,7 @@
                 <div class="card-preview-area" style="height:200px; flex-direction:column; color:#778899;">
                     <span style="font-size:30px;">⏳</span>
                     <div style="margin-top:10px; font-weight:bold; color:#e6ebed;">${esc(player.name)} (#${esc(player.number)})</div>
-                    <div style="font-size:11px; margin-top:4px;">لا يوجد تصميم لمقاس (${esc(sz)}) — ارجعوا للمحرر وارفعوا باترون هذا المقاس</div>
+                    <div style="font-size:11px; margin-top:4px;">لا يوجد تصميم لمقاس (${esc(sz)}) — ارجع للمحرر وارفع باترون هذا المقاس</div>
                 </div>
                 <div class="card-details"><div class="player-info-title">${esc(player.name)} (#${esc(player.number)})</div>
                 <span class="badge-size" style="background:#334455; color:#fff;">${esc(sz)}</span></div>`;
@@ -355,7 +355,7 @@
             container.innerHTML = `
                 <div class="empty-state-box">
                     <h3>⚠️ ${roster.length === 0 ? 'لا يوجد لاعبون مسجلون' : 'لم يتم اعتماد تصميم من المحرر'}</h3>
-                    <p>${roster.length === 0 ? 'ابدؤوا من صفحة الجدول وأدخلوا اللاعبين.' : 'ارجعوا للمحرر وحددوا مكان الاسم والرقم ثم اضغطوا «تأكيد واعتماد التصميم».'}</p>
+                    <p>${roster.length === 0 ? 'ابدأ من صفحة الجدول وأدخل اللاعبين.' : 'ارجع للمحرر وحدد مكان الاسم والرقم ثم اضغط «تأكيد واعتماد التصاميم».'}</p>
                     <div style="display:flex; justify-content:center; gap:12px;">
                         <a href="index.html" class="btn" style="background:#2e7d32; border:none;">📋 صفحة الجدول</a>
                         <a href="editor.html" class="btn">✏️ المحرر</a>
@@ -377,7 +377,7 @@
     window.addEventListener('resize', refreshAll);
 
     window.__bgFail = function () {
-        showBanner('serverBanner', '⚠️ تعذّر تحميل صورة الباترون من السيرفر. شغّلوا <b>python print_server.py</b> وتأكدوا أن الباترون مرفوع في المحرر، ثم حدّثوا الصفحة.');
+        showBanner('serverBanner', '⚠️ تعذّر تحميل صورة الباترون من السيرفر. شغّل <b>python print_server.py</b> وتأكد أن الباترون مرفوع في المحرر، ثم حدّث الصفحة.');
         window.__bgFail = null;
     };
 
@@ -432,7 +432,7 @@
             }
             return true;
         } catch (err) {
-            alert('تأكدوا من تشغيل السيرفر: python print_server.py');
+            alert('تأكد من تشغيل السيرفر: python print_server.py');
             return false;
         }
     }

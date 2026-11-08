@@ -36,7 +36,7 @@ for _d in (TEMPLATES_DIR, OUTPUT_DIR, ASSETS_DIR, FONTS_DIR):
 VALID_SIZES = ("S", "M", "L", "XL")
 
 # معايرة موضع النص عمودياً: كسر من حجم الخط (+ ينزل النص للأسفل، - يرفعه للأعلى)
-# إذا لاحظتم في الاختبار أن الطباعة أعلى/أخفض قليلاً من المعاينة عدّلوا هذا الرقم فقط.
+# إذا لاحظت في الاختبار أن الطباعة أعلى/أخفض قليلاً من المعاينة عدّل هذا الرقم فقط.
 BASELINE_ADJUST = 0.0
 
 # إذا اضطر النظام لتصغير الخط أكثر من هذه النسبة ليحتوي الاسم، يظهر تنبيه للموظف
@@ -179,7 +179,7 @@ def resolve_font(family, raw, warnings):
         tried.append(fam)
         path = find_font_file(fam)
         if path is None:
-            _warn(warnings, f"الخط «{fam}» غير موجود في مجلد fonts — شغّلوا: python download_fonts.py")
+            _warn(warnings, f"الخط «{fam}» غير موجود في مجلد fonts — شغّل: python download_fonts.py")
             continue
         font = _load_font(path)
         shaped = shape_for_font(raw, font)
@@ -188,7 +188,7 @@ def resolve_font(family, raw, warnings):
                 _warn(warnings, f"الخط «{family}» لا يدعم بعض حروف «{raw}» — تم استخدام Cairo لهذه الكتابة")
             tag = "F" + re.sub(r"\W", "", os.path.splitext(os.path.basename(path))[0])
             return tag, path, font, shaped
-    _warn(warnings, "لا يوجد خط مناسب في مجلد fonts — الكتابة العربية لن تظهر. شغّلوا: python download_fonts.py")
+    _warn(warnings, "لا يوجد خط مناسب في مجلد fonts — الكتابة العربية لن تظهر. شغّل: python download_fonts.py")
     return "helv", None, fitz.Font("helv"), str(raw)
 
 
@@ -209,7 +209,7 @@ def draw_text(page, text, box, cfg, warnings, scale=1.0, dx=0.0, dy=0.0):
         fs *= ratio
         tw = box.width
         if ratio < MIN_FIT_RATIO:
-            warnings.append(f"«{text}»: النص طويل جداً وتم تصغيره إلى {int(ratio * 100)}% — راجعوه")
+            warnings.append(f"«{text}»: النص طويل جداً وتم تصغيره إلى {int(ratio * 100)}% — راجعه")
 
     # التعديل الفردي من المعاينة (يُطبّق بعد الاحتواء)
     fs *= scale
@@ -251,7 +251,7 @@ def draw_static(page, el, image_xrefs, warnings):
         aid = el.get("assetId")
         path = find_asset(aid)
         if not path:
-            msg = "أحد الشعارات غير موجود في السيرفر — ارفعوه من جديد في المحرر"
+            msg = "أحد الشعارات غير موجود في السيرفر — ارفعه من جديد في المحرر"
             if msg not in warnings:
                 warnings.append(msg)
             return
@@ -423,11 +423,11 @@ def generate():
 
         template_path = find_template(size)
         if not template_path:
-            return jsonify({"success": False, "message": f"ملف الباترون للمقاس {size} غير موجود — ارفعوه من المحرر"}), 404
+            return jsonify({"success": False, "message": f"ملف الباترون للمقاس {size} غير موجود — ارفعه من المحرر"}), 404
 
         template = fitz.open(template_path)
         if template[0].rotation != 0:
-            return jsonify({"success": False, "message": "الباترون مدوَّر (Rotation). صدّروه من برنامج التصميم بدون تدوير"}), 400
+            return jsonify({"success": False, "message": "الباترون مدوَّر (Rotation). صدّره من برنامج التصميم بدون تدوير"}), 400
 
         warnings = []
         image_xrefs = {}
@@ -482,6 +482,6 @@ if __name__ == "__main__":
     _missing = [f for f in FONT_CANDIDATES if not find_font_file(f)]
     if _missing:
         print("⚠️ خطوط ناقصة في مجلد fonts:", "، ".join(_missing))
-        print("   شغّلوا في نافذة ثانية:  python download_fonts.py")
+        print("   شغّل في نافذة ثانية:  python download_fonts.py")
     print("🚀 خادم الطباعة المتجهية: http://127.0.0.1:5000")
     app.run(host="127.0.0.1", port=5000, debug=False)
